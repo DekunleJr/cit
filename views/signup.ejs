@@ -1,0 +1,43 @@
+<%- include('includes/head.ejs') %>
+
+    <body>
+        <%- include('includes/nav.ejs') %>
+            <main>
+                <div class="container_2">
+                    <section class="form">
+                        <div>
+                            <h2>Signup</h2>
+                        </div>
+                        <% if (errorMessage) { %>
+                            <div class="input-group">
+                                <p><%= errorMessage %></p>
+                            </div>
+                        <% } %>
+                        <form action="/signup" method="POST">
+                            
+                            <input type="text" placeholder="Input your Firstname" id="firstname" name="firstname" value="<%= oldInput.firstname %>" required><br>
+                        
+                            <input type="text" placeholder="Input your Lastname" id="lastname" name="lastname" value="<%= oldInput.lastname %>" required><br>
+                        
+                            <input type="email" placeholder="Input your Email" id="email" name="email" value="<%= oldInput.email %>" required><br>
+                        
+                            <input type="password" placeholder="Input your Password" id="password" name="password" value="<%= oldInput.password %>" required><br>
+                        
+                            <input type="password" placeholder="Confirm password" id="confirm_password" name="confirm_password" value="<%= oldInput.confirm_password %>" required><br>
+                        
+                            <select id="type" name="type" required>
+                                <option value="" disabled selected>Select your type</option>
+                                <option value="student">Student</option>
+                                <option value="requires_service">Requires a Service</option>
+                            </select><br>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Sign Up</button>
+                        </form>
+
+                    </section>
+
+                </div>
+            </main>
+
+<%- include('includes/footer.ejs') %>
+            <%- include('includes/end.ejs') %>

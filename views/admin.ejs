@@ -1,0 +1,192 @@
+<%- include('includes/head.ejs') %>
+
+<body>
+    <%- include('includes/nav.ejs') %>
+    <main>
+        <div class="container_2">
+            <section class="form">
+                <div>
+                    <h3>Add new Instructors</h3>
+                </div>
+                <form action="/admin/teacher" method="POST" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <input 
+                            type="text"
+                            placeholder="Enter Fullname"
+                            name="name"
+                            id="name" required>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="text"
+                            placeholder="Profession"
+                            name="profession"
+                            id="profession" required>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="text"
+                            placeholder="Role"
+                            name="position"
+                            id="position" required>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="file"
+                            placeholder="Image"
+                            name="image"
+                            id="image" required>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="text"
+                            placeholder="Portfolio or linkedin Url"
+                            name="portUrl"
+                            id="portUrl">
+                    </div>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Add Instructor</button>
+                </form>
+            </section>
+            <section class="form">
+                <div>
+                    <h3>Add new Event</h3>
+                </div>
+                <form class="" action="/admin/event" method="POST" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <input 
+                            type="text"
+                            placeholder="Title"
+                            name="title"
+                            id="title" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="file" placeholder="Image" name="image" id="image" required>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="datetime-local"
+                            placeholder="Event Date"
+                            name="date"
+                            id="date" required>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="text"
+                            placeholder="Location of Event"
+                            name="location"
+                            id="location" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea 
+                            id="description" 
+                            name="description" 
+                            placeholder="Details about event here..." 
+                            rows="4" required>
+                        </textarea>
+                    </div>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Add Event</button>
+                </form>
+            </section>
+            <section class="form">
+                <div>
+                    <h3>Add News</h3>
+                </div>
+                <form class="" action="/admin/news" method="POST" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <input 
+                            type="text"
+                            placeholder="Title"
+                            name="title"
+                            id="title" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="file" placeholder="Image" name="image" id="image">
+                    </div>
+                    <div class="input-group" required>
+                        <input 
+                            type="datetime-local"
+                            placeholder="News Date"
+                            name="date"
+                            id="date" required>
+                    </div>
+                    <div class="input-group">
+                        <input 
+                            type="text"
+                            placeholder="Your Name "
+                            name="position"
+                            id="position" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="description" name="description" placeholder="Write your news here..." rows="4" required></textarea>
+                    </div>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Post news</button>
+                </form>
+            </section>
+            <section class="form">
+                <div>
+                    <h3>Add a new course</h3>
+                </div>
+                <form class="" action="/admin/course" method="POST" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <input type="text" placeholder="Title" name="title" id="title" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="file" placeholder="Image" name="image" id="image" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="date" placeholder="Course Start Date" name="date" id="date" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="description" name="description" placeholder="Write about the course here..." rows="4" required></textarea>
+                    </div>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Add new course</button>
+                </form>
+            </section>
+            <section class="form">
+                <div>
+                    <h3>Add a new Service</h3>
+                </div>
+                <form class="" action="/admin/service" method="POST" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <input type="text" placeholder="Title" name="title" id="title" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="file" placeholder="Image" name="image" id="image" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="description" name="description" placeholder="Write about the service here..." rows="4"
+                            required></textarea>
+                    </div>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Add new service</button>
+                </form>
+            </section>
+
+            <section class="form">
+                <div>
+                    <h3>Add An Alumni Testimonial</h3>
+                </div>
+                <form class="" action="/admin/alumni" method="POST" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <input type="text" placeholder="Alumni's Name" name="name" id="name" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="file" placeholder="Image" name="image" id="image" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="comment" name="comment" placeholder="Write the comment here..." rows="4"
+                            required></textarea>
+                    </div>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Post Testimonial</button>
+                </form>
+            </section>
+        </div>    
+    </main>
+    
+
+<%- include('includes/end.ejs') %>

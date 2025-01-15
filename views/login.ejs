@@ -1,0 +1,35 @@
+<%- include('includes/head.ejs') %>
+
+    <body>
+        <%- include('includes/nav.ejs') %>
+            <main>
+                <section class="container_2">
+                    <div class="form">
+                        <div>
+                            <h2>Login</h2>
+                        </div>
+                        <% if (errorMessage) { %>
+                            <div class="input-group">
+                                <p><%= errorMessage %></p>
+                            </div>
+                        <% } %>
+                        <form action="/login" method="POST">
+                            <div class="input-group">
+                                <input type="email" placeholder="Enter your email" name="email" id="email" value="<%= oldInput.email %>" required>
+                            </div>
+                            <div class="input-group">
+                                <input type="password" placeholder="Enter your password" name="password" id="password" value="<%= oldInput.email %>" required>
+                            </div>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Login</button>
+                        </form>
+                        <div class="centered">
+                            <a href="/reset" class="btn btn-primary btn-lg btn-ghost probootstrap-animate">Reset Password</a>
+                        </div> 
+                    </div>
+                </section>
+            </main>
+            <%- include('includes/footer.ejs') %>
+
+
+            <%- include('includes/end.ejs') %>

@@ -1,0 +1,79 @@
+<div class="probootstrap-search" id="probootstrap-search">
+  <a href="#" class="probootstrap-close js-probootstrap-close"><i class="icon-cross"></i></a>
+  <form action="#">
+    <input type="search" name="s" id="search" placeholder="Search a keyword and hit enter...">
+  </form>
+</div>
+
+<div class="probootstrap-page-wrapper">
+  <!-- Fixed navbar -->
+
+  <div class="probootstrap-header-top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-9 probootstrap-top-quick-contact-info">
+          <span><i class="icon-location2"></i>Kayode Oduba Close , Divine homes, Thomas Estate, Ajah, Lagos</span>
+          <span><i class="icon-phone2"></i>+234-812-776-0960</span>
+          <span><i class="icon-mail"></i>info@citedu.org</span>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-3 probootstrap-top-social">
+          <ul>
+            <li><a href="https://x.com/TechBro_Academy" target="_blank"><i class="icon-twitter"></i></a></li>
+            <li><a href="https://web.facebook.com/profile.php?id=61571421645361" target="_blank"><i class="icon-facebook2"></i></a></li>
+            <li><a href="https://www.instagram.com/crown_institute_" target="_blank"><i class="icon-instagram2"></i></a></li>
+            <li><a href="https://youtube.com/@cit_0" target="_blank"><i class="icon-youtube"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="navbar navbar-default probootstrap-navbar">
+    <div class="container">
+      <div class="navbar-header">
+        <div class="btn-more js-btn-more visible-xs">
+          <a href="#"><i class="icon-dots-three-vertical "></i></a>
+        </div>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"
+          aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/" title="CIT">Crown Institute of Technology</a>
+      </div>
+
+      <div id="navbar-collapse" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="<%= path === '/' ? 'active' : '' %>"><a href="/">Home</a></li>
+          <li class="<%= path === '/about' ? 'active' : '' %>"><a href="/about">About Us</a></li>
+          <li class="<%= path === '/news' ? 'active' : '' %>"><a href="/news">News</a></li>
+          <li class="<%= path === '/events' ? 'active' : '' %>"><a href="/events">Events</a></li>
+          <li class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle">Services</a>
+            <ul class="dropdown-menu">
+              <li class="<%= path === '/courses' ? 'active' : '' %>"><a href="/courses">Courses</a></li>
+              <li class="<%= path === '/services' ? 'active' : '' %>"><a href="/services">Others</a></li>
+              <li class="<%= path === '/teachers' ? 'active' : '' %>"><a href="/teachers">Teachers</a></li>
+              <% if (isAuthenticated && userRole==='admin' ) { %>
+                <li class="<%= path === '/admin' ? 'active' : '' %>"><a href="/admin">Admin</a></li>
+              <% } %>
+            </ul>
+          </li>
+          <li class="<%= path === '/contact' ? 'active' : '' %>"><a href="/contact">Contact</a></li>
+          <% if (!isAuthenticated) { %>
+            <li class="<%= path === '/signup' ? 'active' : '' %>"><a href="/signup">Signup</a></li>
+            <li class="<%= path === '/login' ? 'active' : '' %>"><a href="/login">Login</a></li>
+            <% } else { %>
+              <li>
+                <form action="/logout" method="post">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button class="logout" type="submit">Logout</button>
+                </form>
+              </li>
+              <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
