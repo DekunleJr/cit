@@ -61,13 +61,13 @@ router.get('/reset/:token', controller.getNewPassword);
 
 router.post('/password', [
   body('password', 'Enter atleast 8 characters containing numbers and text')
-            .isLength({min: 8})
-            .isAlphanumeric()
-            .trim(),
-        check('confirm_password')
-        .custom((value, { req }) => value === req.body.password)
-        .withMessage('Passwords do not match')
-        .trim()
+    .isLength({ min: 8 })
+    .isAlphanumeric()
+    .trim(),
+  check('confirm_password')
+  .custom((value, { req }) => value === req.body.password)
+  .withMessage('Passwords do not match')
+  .trim()
 ], controller.postNewPassword);
     
 

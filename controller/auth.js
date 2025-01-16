@@ -5,11 +5,21 @@ const nodemailer = require('nodemailer');
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
 
+// const transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS,
+//     },
+// });
+
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.zoho.com',
+    port: 465, 
+    secure: true, 
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,  
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS, 
     },
 });
         
@@ -70,7 +80,7 @@ exports.postSignup = async (req, res, next) => {
         try {
             await transporter.sendMail({
                 to: email,
-                from: 'adekunlesa10@gmail.com',
+                from: process.env.EMAIL_USER,
                 subject: 'Signup successful',
                 html: '<h1>You signed up successfully!</h1>',
             });

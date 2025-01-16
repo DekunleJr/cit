@@ -101,7 +101,7 @@
     justify-items: center;
     border: 1px solid #ccc;
     border-radius: 5px;
-    height: 400px;
+    height: 350px;
     margin-bottom: 15px;
 }
 
@@ -112,7 +112,7 @@
 .try {
     height: 320px;
     background-color: white;
-    opacity: 0.9;
+    opacity: 1;
 }
 
 .try_2 {
@@ -120,7 +120,7 @@
 }
 
 .try_1 {
-    height: 250px;
+    height: 300px;
     background-color: white;
-    opacity: 0.9;
+    opacity: 1;
 }

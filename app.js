@@ -61,9 +61,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.get('/favicon.ico', (req, res) => {
-//   res.status(204).end();  
-// });
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();  
+});
 
 app.use(
     session({
@@ -106,9 +106,9 @@ app.use('/500',errorController.get500);
 app.use(errorController.error);
 
 
-app.use((error, req, res, next) => {
-    res.redirect('/500');
-});
+// app.use((error, req, res, next) => {
+//     res.redirect('/500');
+// });
 
 mongoose
     .connect(

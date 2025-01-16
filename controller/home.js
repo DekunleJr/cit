@@ -317,11 +317,20 @@ exports.postAlumni = async (req, res, next) => {
 exports.postEmail = async (req, res, next) => {
     try {
         const { name, email, subject, message } = req.body;
+        // const transporter = nodemailer.createTransport({
+        //     service: 'gmail',
+        //     auth: {
+        //         user: process.env.EMAIL_USER,
+        //         pass: process.env.EMAIL_PASS,  
+        //     },
+        // });
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: 'smtp.zoho.com', 
+            port: 465, 
+            secure: true, 
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,  
+                user: process.env.EMAIL_USER, 
+                pass: process.env.EMAIL_PASS,
             },
         });
         const mailOptions = {
@@ -347,6 +356,7 @@ exports.getCourse = async (req, res, next) => {
         if (!mongoose.Types.ObjectId.isValid(prodId)) {
             return next();
         }
+        const courses = await Course.find();
         const course = await Course.findById(prodId);
         if (!course) {
             return res.status(404).render('error', {
@@ -356,6 +366,7 @@ exports.getCourse = async (req, res, next) => {
             });
         }
         res.render('course-single', {
+            courses: courses,
             course: course,
             pageTitle: course.title,
             path: '/courses'
