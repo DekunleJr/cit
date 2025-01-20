@@ -231,7 +231,7 @@ exports.postNews = async (req, res, next) => {
 };
 
 exports.postCourse = async (req, res, next) => {
-    let { title, description, date} = req.body;
+    let { title, description, date, price} = req.body;
     const image = req.file;
     if (!image) {
         return res.status(400).render('admin', {
@@ -249,6 +249,7 @@ exports.postCourse = async (req, res, next) => {
             title,
             description,
             date,
+            price,
             imgUrl
         });
 

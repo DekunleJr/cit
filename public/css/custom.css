@@ -72,6 +72,12 @@
     height: 400px;
 }
 
+#myImage_3 {
+    width: 400px;
+    height: 300px;
+    margin-bottom: 10px;
+}
+
 #myImage_2 {
     height: 350px;
 }
@@ -101,12 +107,13 @@
     justify-items: center;
     border: 1px solid #ccc;
     border-radius: 5px;
-    height: 350px;
+    height: 400px;
     margin-bottom: 15px;
 }
 
-.course_d span {
+.course_d span, .course_d h5 {
     justify-self: left;
+    font-size: large;
 }
 
 .try {
