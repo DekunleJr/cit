@@ -1,0 +1,27 @@
+<%- include('includes/head.ejs') %>
+
+    <body>
+        <%- include('includes/nav.ejs') %>
+            <section class="probootstrap-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <% if (status==='success' ) { %>
+                                <h1>Payment Successful!</h1>
+                                <p>
+                                    <%= message %>
+                                </p>
+                                <a href="/" class="btn btn-primary">Back to homepage</a>
+                                <% } else if (status==='failure' ) { %>
+                                    <h1>Payment Failed</h1>
+                                    <p>
+                                        <%= message %>
+                                    </p>
+                                    <a href="/" class="btn btn-primary">Try Again</a>
+                                    <% } %>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <%- include('includes/footer.ejs') %>
+<%- include('includes/end.ejs') %>

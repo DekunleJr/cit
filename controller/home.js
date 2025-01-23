@@ -10,6 +10,11 @@ const { formatDate } = require('../util/date');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const fileHelper = require('../util/file');
+const User = require('../models/user');
+const axios = require('axios');
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+
+
 
 
 exports.getindex = async (req, res, next) => {
@@ -318,27 +323,21 @@ exports.postAlumni = async (req, res, next) => {
 exports.postEmail = async (req, res, next) => {
     try {
         const { name, email, subject, message } = req.body;
-        // const transporter = nodemailer.createTransport({
-        //     service: 'gmail',
-        //     auth: {
-        //         user: process.env.EMAIL_USER,
-        //         pass: process.env.EMAIL_PASS,  
-        //     },
-        // });
+    
         const transporter = nodemailer.createTransport({
             host: 'smtp.zoho.com', 
             port: 465, 
             secure: true, 
             auth: {
-                user: process.env.EMAIL_USER, 
-                pass: process.env.EMAIL_PASS,
+                user: process.env.EMAIL_USER_2, 
+                pass: process.env.EMAIL_PASS_2,
             },
         });
         const mailOptions = {
-            from: email,          // Sender's email
-            to: 'Info@citedu.org',   // Recipient's email
-            subject: `New message from ${name} about ${subject}`, // Subject of the email
-            text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`, // Body of the email
+            from: process.env.EMAIL_USER_2,          
+            to: process.env.EMAIL_USER,  
+            subject: `New message from ${name} about ${subject}`, 
+            text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
         };
         await transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
@@ -369,6 +368,7 @@ exports.getCourse = async (req, res, next) => {
         res.render('course-single', {
             courses: courses,
             course: course,
+            user: req.session.user,
             pageTitle: course.title,
             path: '/courses'
         })
@@ -492,5 +492,91 @@ exports.postDeleteAlumni = async (req, res, next) => {
     } catch (err) {
         // next(new Error(err));
         console.log(err)
+    }
+};
+
+// Initialize Payment
+
+exports.postPayment = async (req, res, next) => {
+    const { email, amount, courseId } = req.body;
+
+    try {
+        const response = await axios.post(
+            'https://api.paystack.co/transaction/initialize',
+            {
+                email,
+                amount: amount * 100, // Convert Naira to kobo
+                metadata: {
+                    courseId, // Store course info for future reference
+                },
+                callback_url: `http://localhost:5000/payment/callback`,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+                },
+            }
+        );
+
+        // Redirect user to Paystack payment page
+        const { authorization_url } = response.data.data;
+        res.redirect(authorization_url);
+    } catch (err) {
+        console.error('Error initializing payment:', err.response.data);
+        res.status(500).json({ error: 'Failed to initialize payment' });
+    }
+};
+
+
+exports.getPayment = async (req, res) => {
+    const { reference } = req.query; // Extract reference from query parameters
+
+    try {
+        // Verify payment with Paystack
+        const response = await axios.get(
+            `https://api.paystack.co/transaction/verify/${reference}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+                },
+            }
+        );
+        
+
+        const paymentData = response.data.data;
+
+        if (paymentData.status === 'success') {
+            // Mark the course as purchased for the user
+            const userId = req.session.user._id;
+            const courseId = paymentData.metadata.courseId;
+
+            await User.findByIdAndUpdate(userId, {
+                $addToSet: { purchasedCourses: courseId },
+            });
+
+            res.render('payment', {
+                user: req.session.user,
+                path: '/payment',
+                pageTitle: 'Payment Successful',
+                status: 'success',
+                message: 'Your payment was successful! You now have access to the course.',
+                course: courseId,
+            });
+        } else {
+            res.render('payment', {
+                pageTitle: 'Payment Failed',
+                status: 'failure',
+                path: '/payment',
+                message: 'Your payment could not be processed. Please try again.',
+            });
+        }
+    } catch (err) {
+        console.error('Error verifying payment:', err.response?.data || err.message);
+        res.status(500).render('payment', {
+            pageTitle: 'Payment Failed',
+            status: 'failure',
+            path: '/payment',
+            message: 'Your payment could not be processed. Please try again.',
+        });
     }
 };

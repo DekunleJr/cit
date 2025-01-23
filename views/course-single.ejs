@@ -34,7 +34,20 @@
                   <img id="myImage_3" src="<%= course.imgUrl %>" alt="<%= course.title %>">
                   <p><%= course.description %></p>
                   <h4>₦<%= course.price %></h4>
-                  <p><a href="#" class="btn btn-primary">Enroll with this course now</a></p>
+                  <!-- <p><a href="#" class="btn btn-primary">Enroll with this course now</a></p> -->
+                  <p>
+                    <!-- <button id="enroll-button" class="btn btn-primary" data-course-id="<%= course._id %>"
+                      data-course-price="<%= course.price %>">
+                      Enroll with this course now
+                    </button> -->
+                    <form action="/initialize-payment" method="POST">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="email" value="<%= user.email %>">
+                      <input type="hidden" name="amount" value="<%= course.price %>"> 
+                      <input type="hidden" name="courseId" value="<%= course._id %>"> 
+                      <button type="submit" class="btn btn-primary">Enroll with this course now</button>
+                    </form>
+                  </p>
                 </div>
               </div>
             </div>

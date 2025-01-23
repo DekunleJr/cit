@@ -51,4 +51,8 @@ router.post('/delete-alumni', isAdmin, controller.postDeleteAlumni);
 
 router.get('/:courseId', isAuth, controller.getCourse);
 
+router.post('/initialize-payment', controller.postPayment);
+
+router.get('/payment/callback', controller.getPayment)
+
 module.exports = router

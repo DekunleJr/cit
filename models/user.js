@@ -21,8 +21,10 @@ const user = new Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
+    purchasedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
     resetToken: String,
     resetTokenExpiration: Date
 });

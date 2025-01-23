@@ -1,35 +1,36 @@
-jQuery(document).ready(function() {
-	
-	"use strict";
-	// Your custom js code goes here.
 
+
+jQuery(document).ready(function () {
+    "use strict";
+
+    // Paystack payment logic
+    $('#enroll-button').on('click', async function () {
+        const courseId = $(this).data('course-id'); 
+        const amount = $(this).data('course-price'); 
+		const csrfToken = $('meta[name="csrf-token"]').attr('content');
+		console.log(courseId)
+
+        try {
+            // Call the initialize-payment endpoint
+            const response = await fetch('/initialize-payment', {
+                method: 'POST',
+                headers: {
+					'Content-Type': 'application/json',
+					'CSRF-Token': csrfToken,
+                },
+                body: JSON.stringify({ amount, courseId }),
+            });
+
+            const { authorizationUrl } = await response.json();
+            if (authorizationUrl) {
+                // Redirect to Paystack payment page
+                window.location.href = authorizationUrl;
+            } else {
+                alert('Failed to initialize payment.', amount);
+            }
+        } catch (err) {
+            console.error('Error initializing payment:', err);
+            alert('An error occurred. Please try again.', err);
+        }
+    });
 });
-
-
-function payWithPaystack() {
-	const email = document.getElementById('email').value;
-	const amount = document.getElementById('amount').value;
-
-	const handler = PaystackPop.setup({
-		key: '<%= PAYSTACK_PUBLIC_KEY %>', // Replace with your public key
-		email,
-		amount: amount * 100, // Convert to kobo
-		currency: 'NGN',
-		callback: async function (response) {
-			// Verify payment
-			const verifyUrl = `/verify-payment/${response.reference}`;
-			const res = await fetch(verifyUrl);
-			const data = await res.json();
-			if (data.status === 'success') {
-				alert('Payment successful!');
-			} else {
-				alert('Payment verification failed!');
-			}
-		},
-		onClose: function () {
-			alert('Transaction was not completed.');
-		},
-	});
-
-	handler.openIframe();
-}
