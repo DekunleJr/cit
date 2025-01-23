@@ -88,7 +88,6 @@ app.use((req, res, next) => {
     User.findById(req.session.user._id)
       .then(user => {
           req.user = user;
-        //   console.log(user);
         next();
       })
       .catch(err => console.log(err));
@@ -111,9 +110,9 @@ app.use('/500',errorController.get500);
 app.use(errorController.error);
 
 
-// app.use((error, req, res, next) => {
-//     res.redirect('/500');
-// });
+app.use((error, req, res, next) => {
+    res.redirect('/500');
+});
 
 mongoose
     .connect(
