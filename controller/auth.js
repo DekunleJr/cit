@@ -175,7 +175,7 @@ exports.postReset = async (req, res, next) => {
       subject: 'Password Reset',
       html: `
         <h3>You requested a password reset.</h3>
-        <p>Click <a href="http://localhost:5000/reset/${token}">here</a> to set a new password.</p>
+        <p>Click <a href="https://www.citedu.org/reset/${token}">here</a> to set a new password.</p>
       `,
     });
   } catch (err) {

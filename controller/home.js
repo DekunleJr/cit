@@ -509,7 +509,7 @@ exports.postPayment = async (req, res, next) => {
                 metadata: {
                     courseId, // Store course info for future reference
                 },
-                callback_url: `http://localhost:5000/payment/callback`,
+                callback_url: `https://www.citedu.org/payment/callback`,
             },
             {
                 headers: {
