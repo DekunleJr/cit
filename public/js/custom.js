@@ -1,36 +1,24 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const video = document.getElementById("myVideo");
 
+    // Remove video if on mobile (screen width < 768px)
+    if (window.innerWidth < 768 && video) {
+        video.remove();
+    }
 
-jQuery(document).ready(function () {
-    "use strict";
+    // Pause video when scrolling past it
+    if (video) {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) {
+                        video.pause(); // Pause video when out of view
+                    }
+                });
+            },
+            { threshold: 0.2 } // Pause when less than 20% is visible
+        );
 
-    // Paystack payment logic
-    $('#enroll-button').on('click', async function () {
-        const courseId = $(this).data('course-id'); 
-        const amount = $(this).data('course-price'); 
-		const csrfToken = $('meta[name="csrf-token"]').attr('content');
-		console.log(courseId)
-
-        try {
-            // Call the initialize-payment endpoint
-            const response = await fetch('/initialize-payment', {
-                method: 'POST',
-                headers: {
-					'Content-Type': 'application/json',
-					'CSRF-Token': csrfToken,
-                },
-                body: JSON.stringify({ amount, courseId }),
-            });
-
-            const { authorizationUrl } = await response.json();
-            if (authorizationUrl) {
-                // Redirect to Paystack payment page
-                window.location.href = authorizationUrl;
-            } else {
-                alert('Failed to initialize payment.', amount);
-            }
-        } catch (err) {
-            console.error('Error initializing payment:', err);
-            alert('An error occurred. Please try again.', err);
-        }
-    });
+        observer.observe(video);
+    }
 });
