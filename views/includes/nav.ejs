@@ -56,6 +56,9 @@
               <li class="<%= path === '/courses' ? 'active' : '' %>"><a href="/courses">Courses</a></li>
               <li class="<%= path === '/services' ? 'active' : '' %>"><a href="/services">Others</a></li>
               <li class="<%= path === '/teachers' ? 'active' : '' %>"><a href="/teachers">Teachers</a></li>
+              <% if (isAuthenticated) { %>
+                <li class="<%= path === '/myCourses' ? 'active' : '' %>"><a href="/myCourses">My courses</a></li>
+              <% } %>
               <% if (isAuthenticated && userRole==='admin' ) { %>
                 <li class="<%= path === '/admin' ? 'active' : '' %>"><a href="/admin">Admin</a></li>
               <% } %>

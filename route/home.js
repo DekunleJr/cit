@@ -20,6 +20,8 @@ router.get('/news', controller.getNews);
 
 router.get('/teachers', controller.getTeacher);
 
+router.get('/myCourses', isAuth, controller.getMyCourses);
+
 router.get('/admin', isAdmin, controller.getAdmin);
 
 

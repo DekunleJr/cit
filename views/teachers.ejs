@@ -33,7 +33,7 @@
                   <p><%= teacher.profession %></p>
                   <p>(<%= teacher.position %>)</p>
                   <ul class="probootstrap-footer-social">
-                    <li class="twitter"><a href="<%= teacher.portUrl %>"><i class="icon-linkedin"></i></a></li>
+                    <li class="twitter"><a href="<%= teacher.portUrl %>" target="_blank"><i class="icon-linkedin"></i></a></li>
                   </ul>
                 </div>
                 <% if (isAuthenticated && userRole==='admin' ) { %>

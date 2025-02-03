@@ -136,6 +136,38 @@ exports.getTeacher = async (req, res, next) => {
     }
 };
 
+exports.getMyCourses = async (req, res) => {
+    try {
+        const userId = req.session.user._id; 
+
+        const user = await User.findById(userId).populate('purchasedCourses');
+
+        if (!user) {
+            return res.status(404).render('error', { 
+                pageTitle: 'Error', 
+                message: 'User not found' 
+            });
+        }
+
+        // Get the purchased courses (populated from the User model)
+        const myCourses = user.purchasedCourses;
+
+        // Render the "My Courses" page
+        res.render('myCourse', { 
+            pageTitle: 'My Courses',
+            path: '/myCourses',
+            course: myCourses 
+        });
+
+    } catch (error) {
+        console.error('Error fetching user courses:', error);
+        res.status(500).render('error', { 
+            pageTitle: 'Error', 
+            message: 'An error occurred while retrieving your courses.' 
+        });
+    }
+};
+
 
 exports.getAdmin = async (req, res, next) => {
     try {
