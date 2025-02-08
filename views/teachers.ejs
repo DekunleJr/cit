@@ -24,7 +24,7 @@
           <% } else { %>
           <% teachers.forEach(teacher => { %>
             <div class="col-md-3 col-sm-6">
-              <div class="probootstrap-teacher text-center probootstrap-animate">
+              <div class="probootstrap-teacher text-center probootstrap-animate" id="teacher">
                 <figure class="media">
                   <img src="<%= teacher.imgUrl %>" alt="<%= teacher.name %>" class="img-responsive" id="teacher_image">
                 </figure>
@@ -32,9 +32,6 @@
                   <h3><%= teacher.name %></h3>
                   <p><%= teacher.profession %></p>
                   <p>(<%= teacher.position %>)</p>
-                  <ul class="probootstrap-footer-social">
-                    <li class="twitter"><a href="<%= teacher.portUrl %>" target="_blank"><i class="icon-linkedin"></i></a></li>
-                  </ul>
                 </div>
                 <% if (isAuthenticated && userRole==='admin' ) { %>
                   <form action="/delete-teacher" method="POST">

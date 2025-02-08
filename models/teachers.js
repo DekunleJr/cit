@@ -18,8 +18,7 @@ const teacher = new Schema({
     imgUrl: {
         type: String,
         required: true
-    },
-    portUrl: String
+    }
 });
 
 module.exports = mongoose.model('Teacher', teacher);
