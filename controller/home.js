@@ -129,7 +129,7 @@ exports.getTeacher = async (req, res, next) => {
         res.render('teachers', {
             teachers: teachers,
             path: '/teachers',
-            pageTitle: 'About Teachers'
+            pageTitle: 'Teachers'
         })
     } catch (err) {
         next(new Error(err));

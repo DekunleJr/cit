@@ -107,7 +107,21 @@
     justify-items: center;
     border: 1px solid #ccc;
     border-radius: 5px;
-    height: 400px;
+    height: 450px;
+    margin-bottom: 15px;
+}
+
+.service {
+    padding: 10px;
+    width: 90%;
+    background-color: #ffffff;
+    z-index: 1;
+    transform: translateY(-4px);
+    justify-self: center;
+    justify-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 300px;
     margin-bottom: 15px;
 }
 
@@ -132,12 +146,6 @@
     opacity: 1;
 }
 
- /* {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-} */
-
 #teacher {
-        height: 350px;
-    }
+    height: 300px;
+}
