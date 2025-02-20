@@ -82,13 +82,13 @@
           <% } else { %>
             <% events.forEach(event=> { %>
               <div class="col-md-4 col-sm-6 col-xs-6 col-xxs-12 probootstrap-animate">
-                <a href="#" class="probootstrap-featured-news-box">
+                <div class="probootstrap-featured-news-box">
                   <figure class="probootstrap-media">
                     <img src="<%= event.imgUrl %>" alt="<%= event.title %>" class="img-responsive" id="myImage">
                   </figure>
                   <div class="probootstrap-text">
                     <h3>
-                      <%= event.title %>
+                      <%= event.title %> 
                     </h3>
                     <span class="probootstrap-date"><i class="icon-calendar"></i>
                       <%= event.date %>
@@ -96,8 +96,14 @@
                     <span class="probootstrap-location"><i class="icon-location2"></i>
                       <%= event.location %>
                     </span>
+                    <p><%= event.description %></p>
+                    <% if (event.button==='reg') { %>
+                      <p><a href="/contact" class="btn btn-primary">Register</a></p>
+                    <% } else if (event.button==='course') { %>
+                      <p><a href="/courses" class="btn btn-primary">Join class</a></p>
+                    <% } else {} %>
                   </div>
-                </a>
+                </div>
                 <% if (isAuthenticated && userRole==='admin' ) { %>
                   <form action="/delete-event" method="POST">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">

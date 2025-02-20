@@ -210,7 +210,7 @@ exports.postTeachers = async (req, res, next) => {
 };
 
 exports.postEvent = async (req, res, next) => {
-    const { title, description, date, location,} = req.body;
+    const { title, description, date, location, button} = req.body;
     const image = req.file;
     if (!image) {
         return res.status(400).render('admin', {
@@ -227,7 +227,8 @@ exports.postEvent = async (req, res, next) => {
             description,
             date,
             location,
-            imgUrl
+            imgUrl,
+            button
         });
 
         await event.save();

@@ -193,6 +193,11 @@
                               <h3><%= event.title %></h3>
                               <span class="probootstrap-date"><i class="icon-calendar"></i><%= event.date %></span>
                               <span class="probootstrap-location"><i class="icon-location2"></i><%= event.location %></span>
+                              <% if (event.button==='reg' ) { %>
+                                <p><a href="/contact" class="btn btn-primary">Register</a></p>
+                              <% } else if (event.button==='course' ) { %>
+                                <p><a href="/courses" class="btn btn-primary">Join class</a></p>
+                              <% } else {} %>
                             </div>
                           </a>
                         </div>

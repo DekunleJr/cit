@@ -75,9 +75,16 @@
                             id="description" 
                             name="description" 
                             placeholder="Details about event here..." 
-                            rows="4" required>
-                        </textarea>
+                            rows="4" required></textarea>
                     </div>
+                    <div class="input-group">
+                        <select id="button" name="button" required>
+                            <option value="" disabled selected>Select Button to display</option>
+                            <option value="reg">Registration</option>
+                            <option value="course">course</option>
+                        </select>
+                    </div>
+                    
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Add Event</button>
                 </form>

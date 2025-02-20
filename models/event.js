@@ -23,6 +23,10 @@ const event = new Schema({
         type: String,
         required: true
     },
+    button: {
+        type: String,
+        required: true
+    },
     expiresAt: {
         type: Date,
         required: true,

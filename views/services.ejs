@@ -84,7 +84,7 @@
                                         <p>
                                             <%= n.description %>
                                         </p>
-                                        <p><a href="/contact" class="btn btn-primary">Sechdule Meeting Now</a>
+                                        <p><a href="/contact" class="btn btn-primary">Sechdule Meeting Now</a></p>
                                         <% if (isAuthenticated && userRole==='admin' ) { %>
                                             <form action="/delete-service" method="POST">
                                                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
