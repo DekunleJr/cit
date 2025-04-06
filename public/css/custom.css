@@ -1,151 +1,320 @@
 /* Your custom css code goes here */
 
 .error {
-    text-align: center;
-    color: #ffffff;
+  text-align: center;
+  color: #ffffff;
+}
+
+.text-white {
+  color: #ffffff;
 }
 
 .container_2 {
-    display: flex; 
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
 }
 
 .form {
-    width: 100%;
-    margin: 10px 20px;
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    
+  width: 100%;
+  margin: 10px 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
 }
 
 .form input {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
 
 .form button {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .input-group {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
-
 
 .input-group input,
 .input-group textarea {
-    width: 100%;
-    padding: 5px;
-    font-size: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    outline: none;
-    transition: border-color 0.3s ease;
-    margin: 0 auto;
-    display: block;
+  width: 100%;
+  padding: 5px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  margin: 0 auto;
+  display: block;
 }
 
 .input-group input:focus,
 .input-group textarea:focus {
-    border-color: #4caf50;
+  border-color: #4caf50;
 }
 
 .input-group input::placeholder,
 .input-group textarea::placeholder {
-    color: #aaa;
+  color: #aaa;
 }
 
 #myImage {
-    width: 300px;
-    height: 400px;
+  width: 300px;
+  height: 400px;
 }
 
 #myImage_3 {
-    width: 400px;
-    height: 300px;
-    margin-bottom: 10px;
+  width: 400px;
+  height: 300px;
+  margin-bottom: 10px;
 }
 
 #myImage_2 {
-    height: 350px;
+  height: 350px;
 }
 
 #teacher_image {
-    height: 120px;
+  height: 120px;
 }
 
 .logout {
-    margin-top: 50%;
-    color: #49d292;
-    border: 1px #49d292;
-    background-color: #ffffff;
+  margin-top: 50%;
+  color: #49d292;
+  border: 1px #49d292;
+  background-color: #ffffff;
 }
 
 .bcolor {
-    background-color: #6a41ed;
+  background-color: #6a41ed;
 }
 
 .course_d {
-    padding: 10px;
-    width: 90%;
-    background-color: #ffffff;
-    z-index: 1;
-    transform: translateY(-4px);
-    justify-self: center;
-    justify-items: center;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    height: 450px;
-    margin-bottom: 15px;
+  padding: 10px;
+  width: 90%;
+  background-color: #ffffff;
+  z-index: 1;
+  transform: translateY(-4px);
+  justify-self: center;
+  justify-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 450px;
+  margin-bottom: 15px;
+}
+
+.course_m {
+  padding: 10px;
+  width: 90%;
+  background-color: #ffffff;
+  z-index: 1;
+  transform: translateY(-4px);
+  justify-self: center;
+  justify-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  /* height: 450px; */
+  margin-bottom: 15px;
 }
 
 .service {
-    padding: 10px;
-    width: 90%;
-    background-color: #ffffff;
-    z-index: 1;
-    transform: translateY(-4px);
-    justify-self: center;
-    justify-items: center;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    height: 300px;
-    margin-bottom: 15px;
+  padding: 10px;
+  width: 90%;
+  background-color: #ffffff;
+  z-index: 1;
+  transform: translateY(-4px);
+  justify-self: center;
+  justify-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 300px;
+  margin-bottom: 15px;
 }
 
-.course_d span, .course_d h5 {
-    justify-self: left;
-    font-size: large;
+.course_d span,
+.course_d h5 {
+  justify-self: left;
+  font-size: large;
 }
 
 .try {
-    height: 320px;
-    background-color: white;
-    opacity: 1;
+  height: 320px;
+  background-color: white;
+  opacity: 1;
 }
 
 .try_2 {
-    height: 300px;
+  height: 300px;
 }
 
 .try_1 {
-    height: 300px;
-    background-color: white;
-    opacity: 1;
+  height: 300px;
+  background-color: white;
+  opacity: 1;
 }
 
 #teacher {
-    height: 300px;
+  height: 300px;
+}
+
+body {
+  background-color: #f4f7f6; /* Lighter background for the whole page */
+}
+
+.probootstrap-section-colored {
+  /* You might already have styles for this, adjust as needed */
+  background-color: #5cb85c; /* Example green color, adjust to your theme */
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.profile-card {
+  background-color: #ffffff; /* White background for the card */
+  border: none;
+  border-radius: 10px; /* Softer corners */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+  padding: 25px;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover; /* Ensures image covers the area nicely */
+  margin: 0 auto 20px auto; /* Center the avatar with bottom margin */
+  display: block;
+  background-color: #e9ecef; /* Placeholder background */
+  color: #6c757d; /* Placeholder icon color */
+  display: flex; /* Use flexbox to center icon */
+  align-items: center;
+  justify-content: center;
+  font-size: 45px; /* Icon size */
+  border: 3px solid #ffffff; /* Optional white border around avatar */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow on avatar */
+}
+
+.profile-card .card-title {
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.profile-card .text-muted {
+  font-size: 0.9em;
+}
+
+.details-list {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  padding-left: 0; /* Remove default padding */
+  list-style: none; /* Remove bullets */
+}
+
+.details-list li {
+  margin-bottom: 12px; /* Spacing between list items */
+  font-size: 0.95em;
+  color: #555;
+}
+
+.details-list i {
+  margin-right: 10px; /* Space between icon and text */
+  color: #007bff; /* Bootstrap primary color for icons */
+  width: 20px; /* Ensure icons align */
+  text-align: center;
+}
+
+.course-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%; /* Make cards in a row have the same base height */
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  background-color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  overflow: hidden; /* Prevent content overflow on rounded corners */
+}
+
+.course-card:hover {
+  transform: translateY(-5px); /* Lift card slightly on hover */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* Increase shadow on hover */
+}
+
+.course-card .card-img-placeholder {
+  height: 180px; /* Fixed height for course images/placeholders */
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+}
+.course-card .card-img-placeholder i {
+  font-size: 3rem;
+}
+
+.course-card img.card-img-top {
+  height: 180px;
+  object-fit: cover; /* Cover the area, might crop */
+  width: 100%;
+}
+
+.course-card .card-body {
+  flex-grow: 1; /* Allow card body to take up remaining space */
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem; /* Standard Bootstrap padding */
+}
+
+.course-card .card-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.course-card .card-subtitle {
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.course-card .card-text {
+  flex-grow: 1; /* Allow description to fill space before footer */
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.course-card .card-footer {
+  background-color: transparent;
+  border-top: 1px solid #eee; /* Subtle separator */
+  padding: 0.75rem 1.25rem;
+  margin-top: auto; /* Push footer to the bottom */
+}
+
+.alert-info {
+  background-color: #e2f3ff; /* Lighter info blue */
+  border-color: #b8e2ff;
+  color: #0c5464;
+}
+.alert-info .alert-heading {
+  color: inherit;
+}
+.alert-info hr {
+  border-top-color: #b8e2ff;
+}
+.alert-info .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+.alert-info .btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
 }

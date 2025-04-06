@@ -1,62 +1,121 @@
-<%- include('includes/head.ejs') %>
 
-    <body>
+    <%- include('includes/head.ejs') %>
+    <!-- Add Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title><%= user.firstname %>'s Dashboard</title> <!-- More specific title -->
 
-        <%- include('includes/nav.ejs') %>
+</head>
 
-            <section class="probootstrap-section probootstrap-section-colored">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12 text-left section-heading probootstrap-animate">
-                            <h1>Registered Courses</h1>
-                        </div>
+<body>
+  <%- include('includes/nav.ejs') %>
+
+  <!-- Section 1: Welcome Header -->
+  <section class="probootstrap-section probootstrap-section-colored">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center probootstrap-animate">
+          <!-- Use fadeInUp animation or similar if available in probootstrap -->
+          <h1 class="text-white mb-1">Welcome, <%= user.firstname %>!</h1>
+          <p class="text-white lead" style="font-size: 2.1rem;">Here's your personal dashboard.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Main Dashboard Content -->
+  <section class="probootstrap-section">
+    <div class="container">
+      <div class="row">
+
+        <!-- Column 1: User Profile Card -->
+        <div class="col-lg-4 col-md-5 mb-4 mb-md-0 probootstrap-animate">
+          <!-- Use fadeInLeft animation or similar -->
+          <div class="profile-card">
+            <div class="card-body text-center">
+              <!-- Placeholder Avatar - Replace with real image logic if available -->
+              <div class="profile-avatar">
+                <i class="fas fa-user"></i> <!-- Font Awesome user icon -->
+              </div>
+              <h4 class="card-title"><%= user.firstname %> <%= user.lastname %></h4>
+              <p class="text-muted mb-4"><%= user.type %> Account</p>
+
+              <ul class="list-unstyled text-left details-list">
+                <li><i class="fas fa-envelope"></i> <%= user.email %></li>
+                <li><i class="fas fa-graduation-cap"></i> <%= course.length %> Registered Course<%= course.length !== 1 ? 's' : '' %></li>
+                <!-- Add more user details here if needed -->
+                <!-- Example: <li><i class="fas fa-calendar-alt"></i> Member Since: [Date]</li> -->
+                <!-- Example: <li><i class="fas fa-phone"></i> [Phone Number]</li> -->
+              </ul>
+
+              <!-- Action Buttons -->
+              <!-- <a href="/edit-profile" class="btn btn-primary btn-sm mb-2 w-100"><i class="fas fa-user-edit me-1"></i> Edit Profile</a> -->
+              <a href="/reset" class="btn btn-outline-secondary btn-sm w-100"><i class="fas fa-key me-1"></i> Change Password</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Registered Courses -->
+        <div class="col-lg-8 col-md-7 probootstrap-animate">
+          <!-- Use fadeInRight animation or similar -->
+          <h2 class="mb-4">My Registered Courses</h2>
+          <!-- <hr class="mb-4"> -->
+
+          <div class="row">
+            <% if (course.length === 0) { %>
+              <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                  <h4 class="alert-heading"><i class="fas fa-info-circle"></i> No Courses Yet!</h4>
+                  <p>You haven't registered for any courses. Ready to start learning?</p>
+                  <hr>
+                  <a href="/courses" class="btn btn-primary btn-sm mb-0"><i class="fas fa-search"></i> Browse Courses</a>
+                </div>
+              </div>
+            <% } else { %>
+              <% course.forEach(n => { %>
+                <div class="col-md-6 mb-4 probootstrap-animate d-flex align-items-stretch">
+                  <!-- Use fadeInUp animation or similar with delay for each card -->
+                  <div class="card course-card w-100">
+                    <% if (n.imgUrl) { %>
+                      <img src="<%= n.imgUrl %>" class="card-img-top" alt="<%= n.title %>">
+                    <% } else { %>
+                       <!-- Placeholder if no image -->
+                       <div class="card-img-placeholder">
+                           <i class="fas fa-image"></i>
+                       </div>
+                    <% } %>
+                    <div class="card-body">
+                      <h5 class="card-title"><%= n.title %></h5>
+                       <% if (n.date) { %>
+                        <!-- Assuming n.date is a reasonable string representation -->
+                        <h6 class="card-subtitle text-muted">
+                            <i class="far fa-calendar-alt"></i> Registered: <%= n.date %>
+                        </h6>
+                       <% } %>
+                      <p class="card-text">
+                        <%# Truncate description if too long - Optional %>
+                        <% if (n.description && n.description.length > 100) { %>
+                           <%= n.description.substring(0, 100) %>...
+                        <% } else { %>
+                           <%= n.description || 'No description available.' %>
+                        <% } %>
+                      </p>
                     </div>
-                </div>
-            </section>
-
-            <section class="probootstrap-section">
-                <div class="container">
-
-                    <div class="row">
-                        <% if (course.length===0) { %>
-                            <div class="col-md-4 col-sm-6 col-xs-6 col-xxs-12 probootstrap-animate">
-                                <h3>No course available</h3>
-                                <p>you haven't registered for any course yet.</p>
-                            </div>
-                            <% } else { %>
-                                <% course.forEach(n=> { %>
-                                    <div class="col-md-4 col-sm-6 col-xs-6 col-xxs-12 probootstrap-animate">
-
-                                        <figure class="probootstrap-media try_2"><img id="myImage" src="<%= n.imgUrl %>"
-                                                alt="<%= n.title %>" class="img-responsive"></figure>
-                                        <div class="probootstrap-text course_d">
-                                            <span class="probootstrap-date"><i class="icon-calendar"></i>
-                                                <%= n.date %>
-                                            </span>
-                                            <h3>
-                                                <%= n.title %>
-                                            </h3>
-                                            <p>
-                                                <%= n.description %>
-                                            </p>
-                                            
-                                        </div>
-
-                                    </div>
-                                    <div class="clearfix visible-sm-block visible-xs-block"></div>
-
-                                    <% }); %>
-                                        <% } %>
-
+                    <div class="card-footer">
+                       <!-- Ensure n._id is available (it should be by default) -->
+                       <a href="/<%= n._id %>" class="btn btn-outline-primary btn-sm">
+                           <i class="fas fa-eye"></i> View Course
+                        </a>
                     </div>
-
+                  </div>
                 </div>
-            </section>
+              <% }); %>
+            <% } %>
+          </div> <!-- / Inner row for courses -->
+        </div> <!-- / End Courses Column -->
 
-            <%- include('includes/footer.ejs') %>
+      </div> <!-- / End Main Row -->
+    </div> <!-- / End Container -->
+  </section>
 
-                </div>
-                <!-- END wrapper -->
-
-
-                <%- include('includes/end.ejs') %>
+  <%- include('includes/footer.ejs') %>
+  <%- include('includes/end.ejs') %>

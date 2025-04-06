@@ -83,7 +83,7 @@
                       </p>
                       <h5>₦<%= n.price %></h5>
                       <% if (isAuthenticated ) { %>
-                        <p><a href="/<%= n.id %>" class="btn btn-primary">Enroll now</a></p>
+                        <p><a href="courses/<%= n.id %>" class="btn btn-primary">Enroll now</a></p>
                         <% } %>
                         <% if (isAuthenticated && userRole==='admin' ) { %>
                           <form action="/delete-course" method="POST">
