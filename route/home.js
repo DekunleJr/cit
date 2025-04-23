@@ -3,6 +3,8 @@ const router = express.Router();
 const isAdmin = require("../util/isAdmin");
 const isAuth = require("../controller/isAuth");
 const controller = require("../controller/home");
+const subCon = require("../controller/admin");
+const { check, body } = require("express-validator");
 
 router.get("/", controller.getindex);
 
@@ -53,6 +55,52 @@ router.post("/delete-alumni", isAdmin, controller.postDeleteAlumni);
 router.post("/initialize-payment", controller.postPayment);
 
 router.get("/payment/callback", controller.getPayment);
+
+router.get(
+  "/admin/courses/:courseId/add-subject",
+  isAdmin,
+  subCon.getAddSubject
+);
+
+router.post("/admin/add-subject", isAdmin, subCon.postAddSubject);
+
+router.get(
+  "/courses/:courseId/subjects/:subjectId/assignments",
+  isAuth, // Anyone logged in can view
+  subCon.getAssignments
+);
+
+router.get(
+  "/courses/:courseId/subjects/:subjectId/assignments/new",
+  isAdmin,
+  subCon.getAddAssignment
+);
+
+// POST new assignment data (Admin Only)
+router.post(
+  "/courses/:courseId/subjects/:subjectId/assignments",
+  isAdmin,
+  [
+    body(
+      "title",
+      "Assignment title is required and must be at least 3 characters."
+    )
+      .isString()
+      .isLength({ min: 3 })
+      .trim(),
+    body("description", "Description is required.").isLength({ min: 5 }).trim(),
+    body("dueDate", "Please enter a valid due date.")
+      .isISO8601() // Checks for YYYY-MM-DD format
+      .toDate() // Converts valid string to Date object
+      .custom((value, { req }) => {
+        if (value < new Date()) {
+          throw new Error("Due date cannot be in the past.");
+        }
+        return true;
+      }),
+  ],
+  subCon.postAddAssignment
+);
 
 router.get("/:courseId", isAuth, controller.getCourse);
 

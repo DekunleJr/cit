@@ -1,65 +1,171 @@
 <%- include('includes/head.ejs') %>
-  <body>
+  <!-- Optional: Add custom CSS for finer control if needed -->
+  <style>
+    .course-header-bg {
+      /* Example gradient - same as before */
+       background: linear-gradient(45deg, #007bff, #6c757d);
+       background-size: cover;
+       background-position: center;
+       color: white;
+       padding: 4rem 0; /* More padding */
+    }
+    .course-price {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #007bff; /* Direct color or use Bootstrap variable if setup */
+    }
+    .action-card {
+       position: -webkit-sticky; /* Safari */
+       position: sticky; /* Make the action card sticky */
+       top: 20px; /* Adjust spacing from top */
+    }
+    .subject-list-item {
+        border: 1px solid #eee;
+        margin-bottom: 10px;
+        padding: 15px;
+        border-radius: 5px;
+        transition: box-shadow 0.2s ease-in-out;
+    }
+    .subject-list-item:hover {
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
 
-    <%- include('includes/nav.ejs') %>
-      
-      <section class="probootstrap-section probootstrap-section-colored">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-12 text-left section-heading probootstrap-animate">
-              <h1><%= course.title %></h1>
-            </div>
-          </div>
+<body>
+  <%- include('includes/nav.ejs') %>
+
+  <!-- Section 1: Course Header -->
+  <section class="course-header-bg text-center text-md-left"> <!-- Changed to text-md-left -->
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <!-- Course Title -->
+          <h1 class="display-4 font-weight-bold mb-3"><%= course.title %></h1> <!-- Changed to font-weight-bold -->
+          <!-- Optional: Short tagline or category -->
+          <!-- <p class="lead mb-0">Expand your knowledge in data science.</p> -->
         </div>
-      </section>
+        <div class="col-md-4 text-md-right mt-3 mt-md-0"> <!-- Changed to text-md-right -->
+            <!-- Price (moved here for prominence) -->
+            <span class="course-price">₦<%= course.price %></span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      
+  <!-- Section 2: Main Content -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row">
 
-      <section class="probootstrap-section probootstrap-section-sm">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="row probootstrap-gutter0">
-                <div class="col-md-4" id="probootstrap-sidebar">
-                  <div class="probootstrap-sidebar-inner probootstrap-overlap probootstrap-animate">
-                    <h3>More Courses</h3>
-                    <ul class="probootstrap-side-menu">
-                      <% courses.forEach(course=> { %>
-                      <li><a href="/<%= course.id %>" class="btn btn-primary"><%= course.title %></a></li>
-                      <% }); %>
+        <!-- Column 1: Course Details & Subjects (Main Content) -->
+        <div class="col-lg-8 mb-4 mb-lg-0">
+
+          <!-- Course Image -->
+          <% if (course.imgUrl) { %>
+            <img src="<%= course.imgUrl %>" alt="<%= course.title %>" class="img-fluid rounded shadow-sm mb-4 w-100" style="max-height: 450px; object-fit: cover;">
+          <% } %>
+
+          <!-- Course Description -->
+          <h2 class="mb-3">Description</h2>
+          <p class="lead"><%= course.description %></p>
+          <!-- Add more descriptive sections if needed -->
+
+
+          <!-- Subjects Section -->
+          <hr class="my-4">
+          <h2 class="mb-4">Subjects in this Course</h2>
+
+          <% if (course.subjects && course.subjects.length > 0) { %>
+            <div class="subject-list">
+              <% course.subjects.forEach(subject => { %>
+                <div class="subject-list-item bg-light">
+                  <div class="d-flex w-100 justify-content-between mb-1">
+                    <h5 class="mb-1"><%= subject.title %> (<%= subject.code %>)</h5>
+                    <!-- Changed badge classes -->
+                    <span class="badge badge-secondary badge-pill align-self-start"><%= subject.units %> Unit<%= subject.units !== 1 ? 's' : '' %></span>
+                  </div>
+                  <!-- Links to subject details (Assignments, etc.) -->
+                   <div class="mt-2">
+                      <!-- Changed me-1 to mr-1 for icon spacing -->
+                     <a href="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments" class="btn btn-sm btn-outline-info mr-1"><i class="fas fa-tasks fa-fw"></i> Assignments</a>
+                     <a href="/courses/<%= course._id %>/subjects/<%= subject._id %>/projects" class="btn btn-sm btn-outline-success mr-1"><i class="fas fa-lightbulb fa-fw"></i> Projects</a>
+                     <a href="/courses/<%= course._id %>/subjects/<%= subject._id %>/attendance" class="btn btn-sm btn-outline-warning"><i class="fas fa-user-check fa-fw"></i> Attendance</a>
                   </div>
                 </div>
-                <div class="col-md-7 col-md-push-1  probootstrap-animate" id="probootstrap-content">
-                  <!-- <h2>Description</h2> -->
-                  <img id="myImage_3" src="<%= course.imgUrl %>" alt="<%= course.title %>">
-                  <p><%= course.description %></p>
-                  <h4>₦<%= course.price %></h4>
-                  <!-- <p><a href="#" class="btn btn-primary">Enroll with this course now</a></p> -->
-                  <p>
-                    <!-- <button id="enroll-button" class="btn btn-primary" data-course-id="<%= course._id %>"
-                      data-course-price="<%= course.price %>">
-                      Enroll with this course now
-                    </button> -->
-                    <form action="/initialize-payment" method="POST">
-                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                      <input type="hidden" name="email" value="<%= user.email %>">
-                      <input type="hidden" name="amount" value="<%= course.price %>"> 
-                      <input type="hidden" name="courseId" value="<%= course._id %>"> 
-                      <button type="submit" class="btn btn-primary">Enroll with this course now</button>
-                    </form>
-                  </p>
-                </div>
-              </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info" role="alert">
+              <i class="fas fa-info-circle"></i> No specific subjects are listed for this course program yet.
+            </div>
+          <% } %>
+          <!-- End Subjects Section -->
+
+        </div><!-- /End Column 1 -->
+
+        <!-- Column 2: Actions & More Courses (Sidebar) -->
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow-sm"> <!-- Added sticky class via CSS -->
+            <div class="card-body">
+              <% if (!pay) { %>
+              <h4 class="card-title mb-3 text-center">Enroll Now</h4>
+              <p class="text-center course-price mb-3">₦<%= course.price %></p>
+
+              <!-- Enrollment Form -->
+              <!-- Removed d-grid -->
+               
+              <form action="/initialize-payment" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="email" value="<%= locals.user ? user.email : '' %>">
+                <input type="hidden" name="amount" value="<%= course.price %>">
+                <input type="hidden" name="courseId" value="<%= course._id %>">
+                <!-- Added btn-block class -->
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                  <!-- Changed me-2 to mr-2 -->
+                  <i class="fas fa-cart-plus mr-2"></i>  Enroll with this course
+                </button>
+              </form>
+              <% } %>
+
+              <!-- Admin: Add Subject Button -->
+              <% if (isAuthenticated && userRole ==='admin' ) { %>
+                <hr class="my-3">
+                <a href="/admin/courses/<%= course._id %>/add-subject" class="btn btn-outline-secondary btn-block"> <!-- Changed to btn-block -->
+                   <!-- Changed me-2 to mr-2 -->
+                   <i class="fas fa-plus-circle mr-2"></i>  Add Subject to Course
+                </a>
+              <% } %>
+
             </div>
           </div>
-        </div>
-      </section>
-      
-      
-      <%- include('includes/footer.ejs') %>
 
-    </div>
-    <!-- END wrapper -->
-    
+          <!-- More Courses Section -->
+          <div class="mt30 p-3 bg-light rounded">
+             <h3 class="mb20">Explore Other Courses</h3>
+              <% if (courses && courses.length > 1) { %>
+                <ul class="list-unstyled">
+                    <% courses.forEach(otherCourse => { %>
+                        <% if (String(otherCourse._id) !== String(course._id)) { %>
+                           <li class="mb-2">
+                              <a href="/<%= otherCourse._id %>" class="text-decoration-none">
+                                <i class="fas fa-graduation-cap fa-fw mr-1 text-muted"></i> <%= otherCourse.title %>
+                              </a>
+                           </li>
+                         <% } %>
+                     <% }); %>
+                 </ul>
+               <% } else { %>
+                   <p class="text-muted small">No other courses available at the moment.</p>
+               <% } %>
+           </div>
+           <!-- End More Courses -->
 
-<%- include('includes/end.ejs') %>
+        </div><!-- /End Column 2 -->
+
+      </div><!-- /End Row -->
+    </div><!-- /End Container -->
+  </section>
+
+  <%- include('includes/footer.ejs') %>
+  <%- include('includes/end.ejs') %>

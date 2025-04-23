@@ -1,16 +1,12 @@
-
-    <%- include('includes/head.ejs') %>
-    <!-- Add Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <title><%= user.firstname %>'s Dashboard</title> <!-- More specific title -->
-
+<%- include('includes/head.ejs') %>
+<title><%= user.firstname %>'s Dashboard</title>
 </head>
 
 <body>
   <%- include('includes/nav.ejs') %>
 
-  <!-- Section 1: Welcome Header -->
-  <section class="probootstrap-section probootstrap-section-colored">
+  <!-- ... (keep Welcome Header) ... -->
+     <section class="probootstrap-section probootstrap-section-colored">
     <div class="container">
       <div class="row">
         <div class="col-md-12 text-center probootstrap-animate">
@@ -22,11 +18,9 @@
     </div>
   </section>
 
-  <!-- Section 2: Main Dashboard Content -->
   <section class="probootstrap-section">
     <div class="container">
       <div class="row">
-
         <!-- Column 1: User Profile Card -->
         <div class="col-lg-4 col-md-5 mb-4 mb-md-0 probootstrap-animate">
           <!-- Use fadeInLeft animation or similar -->
@@ -54,65 +48,55 @@
           </div>
         </div>
 
-        <!-- Column 2: Registered Courses -->
+        <!-- Column 2: Registered Courses and their Subjects -->
         <div class="col-lg-8 col-md-7 probootstrap-animate">
-          <!-- Use fadeInRight animation or similar -->
-          <h2 class="mb-4">My Registered Courses</h2>
-          <!-- <hr class="mb-4"> -->
 
-          <div class="row">
-            <% if (course.length === 0) { %>
-              <div class="col-12">
-                <div class="alert alert-info" role="alert">
-                  <h4 class="alert-heading"><i class="fas fa-info-circle"></i> No Courses Yet!</h4>
-                  <p>You haven't registered for any courses. Ready to start learning?</p>
-                  <hr>
-                  <a href="/courses" class="btn btn-primary btn-sm mb-0"><i class="fas fa-search"></i> Browse Courses</a>
-                </div>
-              </div>
-            <% } else { %>
-              <% course.forEach(n => { %>
-                <div class="col-md-6 mb-4 probootstrap-animate d-flex align-items-stretch">
-                  <!-- Use fadeInUp animation or similar with delay for each card -->
-                  <div class="card course-card w-100">
-                    <% if (n.imgUrl) { %>
-                      <img src="<%= n.imgUrl %>" class="card-img-top" alt="<%= n.title %>">
-                    <% } else { %>
-                       <!-- Placeholder if no image -->
-                       <div class="card-img-placeholder">
-                           <i class="fas fa-image"></i>
-                       </div>
-                    <% } %>
-                    <div class="card-body">
-                      <h5 class="card-title"><%= n.title %></h5>
-                       <% if (n.date) { %>
-                        <!-- Assuming n.date is a reasonable string representation -->
-                        <h6 class="card-subtitle text-muted">
-                            <i class="far fa-calendar-alt"></i> Registered: <%= n.date %>
-                        </h6>
-                       <% } %>
-                      <p class="card-text">
-                        <%# Truncate description if too long - Optional %>
-                        <% if (n.description && n.description.length > 100) { %>
-                           <%= n.description.substring(0, 100) %>...
-                        <% } else { %>
-                           <%= n.description || 'No description available.' %>
-                        <% } %>
-                      </p>
-                    </div>
-                    <div class="card-footer">
-                       <!-- Ensure n._id is available (it should be by default) -->
-                       <a href="/<%= n._id %>" class="btn btn-outline-primary btn-sm">
-                           <i class="fas fa-eye"></i> View Course
-                        </a>
-                    </div>
+          <% if (!user.purchasedCourses || user.purchasedCourses.length === 0) { %>
+            <!-- ... (Keep 'No Courses Yet' message) ... -->
+            <div class="alert alert-info" role="alert">
+              <h4 class="alert-heading"><i class="fas fa-info-circle"></i> No Courses Yet!</h4>
+              <p>You haven't registered for any course programs. Ready to start learning?</p>
+              <hr>
+              <a href="/courses" class="btn btn-primary btn-sm mb-0"><i class="fas fa-search"></i> Browse Course Programs</a>
+            </div>
+          <% } else { %>
+            <!-- Iterate over each MAIN course program the user purchased -->
+            <% user.purchasedCourses.forEach(program => { %>
+              <div class="mb-5"> <!-- Add spacing between programs -->
+                <h2 class="mb-3"><%= program.title %></h2>
+                <p><%= program.description %></p>
+                <hr>
+                <h3 class="mb-3">Subjects in this Program:</h3>
+
+                <% if (!program.subjects || program.subjects.length === 0) { %>
+                  <p class="text-muted">No subjects listed for this program yet.</p>
+                <% } else { %>
+                  <div class="list-group">
+                    <!-- Iterate over the SUBJECTS within the current program -->
+                    <% program.subjects.forEach(subject => { %>
+                      <div class="list-group-item list-group-item-action flex-column align-items-start mb-3">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h5 class="mb-1"><%= subject.title %> (<%= subject.code %>)</h5>
+                          <small><%= subject.units %> unit<%= subject.units !== 1 ? 's' : '' %></small>
+                        </div>
+                        <!-- Placeholder for links to subject details -->
+                        <div class="mt-2">
+                           <!-- These links would go to new routes/views -->
+                           <a href="/courses/<%= program._id %>/subjects/<%= subject._id %>/assignments" class="btn btn-sm btn-outline-info me-2"><i class="fas fa-tasks"></i> Assignments</a>
+                           <a href="/courses/<%= program._id %>/subjects/<%= subject._id %>/projects" class="btn btn-sm btn-outline-success me-2"><i class="fas fa-lightbulb"></i> Projects</a>
+                           <a href="/courses/<%= program._id %>/subjects/<%= subject._id %>/attendance" class="btn btn-sm btn-outline-warning"><i class="fas fa-user-check"></i> Attendance</a>
+                           <!-- You'll need to create routes and views for these ^ -->
+                        </div>
+                         
+
+                      </div>
+                    <% }); %>
                   </div>
-                </div>
-              <% }); %>
-            <% } %>
-          </div> <!-- / Inner row for courses -->
+                <% } %>
+              </div>
+            <% }); %>
+          <% } %>
         </div> <!-- / End Courses Column -->
-
       </div> <!-- / End Main Row -->
     </div> <!-- / End Container -->
   </section>

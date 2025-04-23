@@ -1,0 +1,125 @@
+<%- include('../includes/head.ejs') %>
+<body>
+  <%- include('../includes/nav.ejs') %>
+
+  <section class="probootstrap-section probootstrap-section-colored">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-left section-heading probootstrap-animate">
+          <ol
+            class="breadcrumb"
+            style="background: none; padding: 0; color: white"
+          >
+            <li>
+              <a href="/<%= course._id %>" style="color: white"
+                ><%= course.title %></a
+              >
+            </li>
+            <li>
+              <a
+                href="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments"
+                style="color: white"
+              >
+                <%= subject.code %> - Assignments
+              </a>
+            </li>
+            <li class="active" style="color: white">Add New</li>
+          </ol>
+          <h1>Add Assignment</h1>
+          <h2>For: <%= subject.title %></h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="probootstrap-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 probootstrap-animate">
+          <% if (hasError) { %>
+          <div class="alert alert-danger mb30" role="alert">
+            <%= errorMessage %>
+          </div>
+          <% } %>
+
+          <form
+            class="probootstrap-form"
+            action="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments"
+            method="POST"
+          >
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+            <% const checkError = (fieldName) => validationErrors.find(e =>
+            e.param === fieldName); %>
+
+            <div class="form-group mb30">
+              <label for="title">Assignment Title</label>
+              <input
+                type="text"
+                class="form-control <%= checkError('title') ? 'is-invalid' : '' %>"
+                id="title"
+                name="title"
+                value="<%= oldInput.title %>"
+                required
+              />
+              <% if (checkError('title')) { %>
+              <span class="invalid-feedback"
+                ><%= checkError('title').msg %></span
+              >
+              <% } %>
+            </div>
+
+            <div class="form-group mb30">
+              <label for="description">Description</label>
+              <textarea
+                class="form-control <%= checkError('description') ? 'is-invalid' : '' %>"
+                id="description"
+                name="description"
+                rows="5"
+                required
+              >
+<%= oldInput.description %></textarea
+              >
+              <% if (checkError('description')) { %>
+              <span class="invalid-feedback"
+                ><%= checkError('description').msg %></span
+              >
+              <% } %>
+            </div>
+
+            <div class="form-group mb30">
+              <label for="dueDate">Due Date</label>
+              <input
+                type="date"
+                class="form-control <%= checkError('dueDate') ? 'is-invalid' : '' %>"
+                id="dueDate"
+                name="dueDate"
+                value="<%= oldInput.dueDate ? new Date(oldInput.dueDate).toISOString().split('T')[0] : '' %>"
+                required
+              />
+              <% if (checkError('dueDate')) { %>
+              <span class="invalid-feedback"
+                ><%= checkError('dueDate').msg %></span
+              >
+              <% } %>
+            </div>
+
+            <div class="form-group text-right">
+              <button type="submit" class="btn btn-primary">
+                <i class="icon-plus"></i> Add Assignment
+              </button>
+              <a
+                href="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments"
+                class="btn btn-default"
+                style="margin-left: 10px"
+                >Cancel</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../includes/footer.ejs') %> <%- include('../includes/end.ejs') %>
+</body>

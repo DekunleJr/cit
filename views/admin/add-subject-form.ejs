@@ -1,0 +1,70 @@
+<%- include('../includes/head.ejs') %>
+
+<body>
+  <%- include('../includes/nav.ejs') %>
+
+  <main class="container mt-4">
+    <h1><%= pageTitle %></h1>
+    <hr />
+
+    <% if (errorMessage) { %>
+    <div class="alert alert-danger" role="alert"><%= errorMessage %></div>
+    <% } %>
+
+    <!-- The form posts to the route that will handle creation -->
+    <form action="/admin/add-subject" method="POST">
+      <!-- *** CRITICAL PART: Hidden input to send the course ID *** -->
+      <input type="hidden" name="courseId" value="<%= course._id %>" />
+
+      <!-- Add CSRF token if you are using csurf -->
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+      <div class="mb-3" style="margin-bottom: 4px">
+        <label for="title" class="form-label"
+          >Subject Title (e.g., STAT 101: Introduction to Statistics)</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          id="title"
+          name="title"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="code" class="form-label"
+          >Subject Code (e.g., STAT 101)</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          id="code"
+          name="code"
+          required
+        />
+      </div>
+
+      <div class="mb-3" style="margin-bottom: 4px">
+        <label for="units" class="form-label">Units</label>
+        <input
+          type="number"
+          class="form-control"
+          id="units"
+          name="units"
+          required
+          min="0"
+          step="1"
+        />
+      </div>
+
+      <!-- Add other subject fields if needed (e.g., description) -->
+
+      <a href="/<%= course._id %>" class="btn btn-secondary">Cancel</a>
+      <!-- Link back to course detail page -->
+      <button type="submit" class="btn btn-primary">Add Subject</button>
+    </form>
+  </main>
+
+  <%- include('../includes/footer.ejs') %> <%- include('../includes/end.ejs') %>
+</body>

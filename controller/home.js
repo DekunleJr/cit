@@ -4,6 +4,7 @@ const Teacher = require("../models/teachers");
 const Event = require("../models/event");
 const News = require("../models/news");
 const Course = require("../models/course");
+const Subject = require("../models/subject");
 const Service = require("../models/service");
 const Alumni = require("../models/alumni");
 const { formatDate } = require("../util/date");
@@ -132,7 +133,14 @@ exports.getMyCourses = async (req, res) => {
   try {
     const userId = req.session.user._id;
 
-    const user = await User.findById(userId).populate("purchasedCourses");
+    // const user = await User.findById(userId).populate("purchasedCourses");
+
+    const user = await User.findById(userId).populate({
+      path: "purchasedCourses",
+      populate: {
+        path: "subjects",
+      },
+    });
 
     if (!user) {
       return res.status(404).render("error", {
@@ -149,7 +157,7 @@ exports.getMyCourses = async (req, res) => {
       pageTitle: "My Courses",
       path: "/myCourses",
       course: myCourses,
-      user: req.session.user,
+      user: user,
     });
   } catch (error) {
     console.error("Error fetching user courses:", error);
@@ -375,7 +383,16 @@ exports.getCourse = async (req, res, next) => {
       return next();
     }
     const courses = await Course.find();
-    const course = await Course.findById(prodId);
+    const course = await Course.findById(prodId).populate("subjects");
+    let pay;
+    const purchasedCourses = req.session.user.purchasedCourses;
+
+    const isPurchased = purchasedCourses.some((id) => id.equals(course._id));
+    if (isPurchased) {
+      pay = true;
+    } else {
+      pay = false;
+    }
     if (!course) {
       return res.status(404).render("error", {
         path: "/404",
@@ -387,6 +404,7 @@ exports.getCourse = async (req, res, next) => {
       courses: courses,
       course: course,
       user: req.session.user,
+      pay: pay,
       pageTitle: course.title,
       path: "/courses",
     });

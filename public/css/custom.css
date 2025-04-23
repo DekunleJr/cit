@@ -318,3 +318,34 @@ body {
   background-color: #0056b3;
   border-color: #0056b3;
 }
+.assignment-item {
+  border: 1px solid #eee;
+  padding: 20px;
+  margin-bottom: 20px; /* Use mb20 or mb30 from your CSS */
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+.assignment-item h3 {
+  margin-top: 0;
+  margin-bottom: 10px; /* Use mb10 */
+  font-size: 22px; /* Adjust as needed */
+}
+.assignment-meta {
+  font-size: 14px;
+  color: #8b8e94; /* Use body color from your CSS */
+  margin-bottom: 15px; /* Use mb10 or mb20 */
+}
+.assignment-meta strong {
+  color: #181920; /* Use heading color */
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 85%;
+  margin-top: 5px;
+  display: block;
+}
