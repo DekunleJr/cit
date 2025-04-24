@@ -117,6 +117,83 @@
             </div>
           </form>
         </div>
+
+        <div class="col-md-8 col-md-offset-2 probootstrap-animate">
+            <form
+            class="probootstrap-form"
+            action="/courses/<%= course._id %>/subjects/<%= subject._id %>/projects"
+            method="POST"
+          >
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+            <% const checkError = (fieldName) => validationErrors.find(e =>
+            e.param === fieldName); %>
+
+            <div class="form-group mb30">
+              <label for="title">Project Title</label>
+              <input
+                type="text"
+                class="form-control <%= checkError('title') ? 'is-invalid' : '' %>"
+                id="title"
+                name="title"
+                value="<%= oldInput.title %>"
+                required
+              />
+              <% if (checkError('title')) { %>
+              <span class="invalid-feedback"
+                ><%= checkError('title').msg %></span
+              >
+              <% } %>
+            </div>
+
+            <div class="form-group mb30">
+              <label for="description">Description</label>
+              <textarea
+                class="form-control <%= checkError('description') ? 'is-invalid' : '' %>"
+                id="description"
+                name="description"
+                rows="5"
+                required
+              >
+<%= oldInput.description %></textarea
+              >
+              <% if (checkError('description')) { %>
+              <span class="invalid-feedback"
+                ><%= checkError('description').msg %></span
+              >
+              <% } %>
+            </div>
+
+            <div class="form-group mb30">
+              <label for="dueDate">Due Date</label>
+              <input
+                type="date"
+                class="form-control <%= checkError('dueDate') ? 'is-invalid' : '' %>"
+                id="dueDate"
+                name="dueDate"
+                value="<%= oldInput.dueDate ? new Date(oldInput.dueDate).toISOString().split('T')[0] : '' %>"
+                required
+              />
+              <% if (checkError('dueDate')) { %>
+              <span class="invalid-feedback"
+                ><%= checkError('dueDate').msg %></span
+              >
+              <% } %>
+            </div>
+
+            <div class="form-group text-right">
+              <button type="submit" class="btn btn-primary">
+                <i class="icon-plus"></i> Add Project
+              </button>
+              <a
+                href="/courses/<%= course._id %>/subjects/<%= subject._id %>/project"
+                class="btn btn-default"
+                style="margin-left: 10px"
+                >Cancel</a
+              >
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </section>

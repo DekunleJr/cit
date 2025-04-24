@@ -143,6 +143,32 @@ exports.getAssignments = async (req, res, next) => {
   }
 };
 
+exports.getProjects = async (req, res, next) => {
+  const { courseId, subjectId } = req.params;
+  try {
+    const subject = await Subject.findOne({ _id: subjectId, course: courseId })
+      .populate("course") // Ensure course has `_id` and `title`
+      .populate("projects"); // Ensure assignments is populated if needed
+
+    if (!subject) {
+      req.flash("error", "Subject not found");
+      return res.redirect("/courses"); // Redirect to courses if subject not found
+    }
+
+    res.render("project", {
+      pageTitle: `Projects for ${subject.title}`,
+      path: `/courses/${courseId}/subjects/${subjectId}/projects`,
+      subject: subject,
+      course: subject.course,
+      userRole: req.session.user.type, // Make sure this exists
+      flash: req.flash(),
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
 exports.getAddAssignment = async (req, res, next) => {
   const { courseId, subjectId } = req.params;
   try {
@@ -224,6 +250,63 @@ exports.postAddAssignment = async (req, res, next) => {
 
     req.flash("success", "Assignment added successfully!"); // Add success message
     res.redirect(`/courses/${courseId}/subjects/${subjectId}/assignments`); // Redirect to the list
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.postAddProject = async (req, res, next) => {
+  const { courseId, subjectId } = req.params;
+  const { title, description, dueDate } = req.body;
+  const errors = validationResult(req);
+
+  let subject; // Declare subject here to access it in catch block if needed
+
+  try {
+    subject = await Subject.findOne({
+      _id: subjectId,
+      course: courseId,
+    }).populate("course", "title"); // Need course title if re-rendering form
+
+    if (!subject) {
+      return req.flash("error", "Subject not found!");
+    }
+
+    if (!errors.isEmpty()) {
+      console.log(errors.array());
+      // Re-render the form with errors and old input
+      return res.status(422).render("subject/add-assignment-form", {
+        pageTitle: `Add Assignment to ${subject.code}`,
+        path: `/courses/${courseId}/subjects/${subjectId}/assignments/new`,
+        subject: subject,
+        course: subject.course,
+        editing: false,
+        hasError: true,
+        errorMessage: errors.array()[0].msg, // Show the first error message
+        validationErrors: errors.array(),
+        oldInput: { title, description, dueDate }, // Pass back user's input
+        csrfToken: req.csrfToken(),
+      });
+    }
+
+    // Create the new project object (Mongoose subdocuments automatically get an _id)
+    const newProject = {
+      title: title,
+      description: description,
+      dueDate: new Date(dueDate), // Ensure it's a Date object
+    };
+
+    // Add to the assignments array
+    subject.projects.push(newProject);
+
+    // Save the parent Subject document
+    await subject.save();
+
+    req.flash("success", "Project added successfully!"); // Add success message
+    res.redirect(`/courses/${courseId}/subjects/${subjectId}/projects`); // Redirect to the list
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

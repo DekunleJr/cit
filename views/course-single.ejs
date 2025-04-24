@@ -41,12 +41,9 @@
       <div class="row align-items-center">
         <div class="col-md-8">
           <!-- Course Title -->
-          <h1 class="display-4 font-weight-bold mb-3"><%= course.title %></h1> <!-- Changed to font-weight-bold -->
-          <!-- Optional: Short tagline or category -->
-          <!-- <p class="lead mb-0">Expand your knowledge in data science.</p> -->
+          <h1 class="display-4 font-weight-bold mb-3"><%= course.title %></h1> 
         </div>
-        <div class="col-md-4 text-md-right mt-3 mt-md-0"> <!-- Changed to text-md-right -->
-            <!-- Price (moved here for prominence) -->
+        <div class="col-md-4 text-md-right mt-3 mt-md-0"> 
             <span class="course-price">₦<%= course.price %></span>
         </div>
       </div>
@@ -72,35 +69,7 @@
           <!-- Add more descriptive sections if needed -->
 
 
-          <!-- Subjects Section -->
-          <hr class="my-4">
-          <h2 class="mb-4">Subjects in this Course</h2>
-
-          <% if (course.subjects && course.subjects.length > 0) { %>
-            <div class="subject-list">
-              <% course.subjects.forEach(subject => { %>
-                <div class="subject-list-item bg-light">
-                  <div class="d-flex w-100 justify-content-between mb-1">
-                    <h5 class="mb-1"><%= subject.title %> (<%= subject.code %>)</h5>
-                    <!-- Changed badge classes -->
-                    <span class="badge badge-secondary badge-pill align-self-start"><%= subject.units %> Unit<%= subject.units !== 1 ? 's' : '' %></span>
-                  </div>
-                  <!-- Links to subject details (Assignments, etc.) -->
-                   <div class="mt-2">
-                      <!-- Changed me-1 to mr-1 for icon spacing -->
-                     <a href="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments" class="btn btn-sm btn-outline-info mr-1"><i class="fas fa-tasks fa-fw"></i> Assignments</a>
-                     <a href="/courses/<%= course._id %>/subjects/<%= subject._id %>/projects" class="btn btn-sm btn-outline-success mr-1"><i class="fas fa-lightbulb fa-fw"></i> Projects</a>
-                     <a href="/courses/<%= course._id %>/subjects/<%= subject._id %>/attendance" class="btn btn-sm btn-outline-warning"><i class="fas fa-user-check fa-fw"></i> Attendance</a>
-                  </div>
-                </div>
-              <% }); %>
-            </div>
-          <% } else { %>
-            <div class="alert alert-info" role="alert">
-              <i class="fas fa-info-circle"></i> No specific subjects are listed for this course program yet.
-            </div>
-          <% } %>
-          <!-- End Subjects Section -->
+          
 
         </div><!-- /End Column 1 -->
 
@@ -120,9 +89,7 @@
                 <input type="hidden" name="email" value="<%= locals.user ? user.email : '' %>">
                 <input type="hidden" name="amount" value="<%= course.price %>">
                 <input type="hidden" name="courseId" value="<%= course._id %>">
-                <!-- Added btn-block class -->
                 <button type="submit" class="btn btn-primary btn-lg btn-block">
-                  <!-- Changed me-2 to mr-2 -->
                   <i class="fas fa-cart-plus mr-2"></i>  Enroll with this course
                 </button>
               </form>
@@ -162,8 +129,36 @@
            <!-- End More Courses -->
 
         </div><!-- /End Column 2 -->
-
+        
       </div><!-- /End Row -->
+      <div class="col-12"> 
+        <hr class="my-4">
+        <h2 class="mb-4">Subjects in this Course</h2>
+
+        <% if (course.subjects && course.subjects.length > 0) { %>
+          <div class="row">
+            <% course.subjects.forEach(subject => { %>
+              <div class="col-md-6 col-12 mb-4"> 
+                <div class="subject-list-item bg-light h-100">
+                  <div class="d-flex w-100 justify-content-between mb-1">
+                    <h5 class="mb-1"><%= subject.title %> (<%= subject.code %>)</h5>
+                    <span class="badge badge-secondary badge-pill align-self-start"><%= subject.units %> Unit<%= subject.units !== 1 ? 's' : '' %></span>
+                  </div>
+                  <div class="mt-2 d-flex">
+                    <a href="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments" class="btn btn-sm btn-outline-info mr-1"><i class="fas fa-tasks fa-fw"></i> Assignments</a>
+                    <a href="/courses/<%= course._id %>/subjects/<%= subject._id %>/projects" class="btn btn-sm btn-outline-success mr-1"><i class="fas fa-lightbulb fa-fw"></i> Projects</a>
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          </div> 
+        <% } else { %>
+          <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i> No specific subjects are listed for this course program yet.
+          </div>
+        <% } %>
+        <!-- End Subjects Section -->
+      </div> <!-- End col-12 for subjects -->
     </div><!-- /End Container -->
   </section>
 

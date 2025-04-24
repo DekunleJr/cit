@@ -14,9 +14,9 @@
                 ><%= course.title %></a
               >
             </li>
-            <li style="color: white"><%= subject.code %> - Assignments</li>
+            <li style="color: white"><%= subject.code %> - Projects</li>
           </ul>
-          <h1 style="color: white">Assignments for <%= subject.title %></h1>
+          <h1 style="color: white">Projects for <%= subject.title %></h1>
         </div>
       </div>
     </div>
@@ -35,21 +35,21 @@
           href="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments/new"
           class="btn btn-primary"
         >
-          <i class="icon-plus"></i> Add New Assignment
+          <i class="icon-plus"></i> Add New Project
         </a>
       </div>
-      <% } %> <% if (!subject.assignments || subject.assignments.length === 0) {
+      <% } %> <% if (!subject.projects || subject.projects.length === 0) {
       %>
-      <div class="alert alert-info text-center">No assignments available.</div>
-      <% } else { %> <% subject.assignments.forEach(function(assignment) { %>
+      <div class="alert alert-info text-center">No Projects available.</div>
+      <% } else { %> <% subject.projects.forEach(function(project) { %>
       <div class="assignment-item mb30">
-        <h3><%= assignment.title %></h3>
-        <p><%= assignment.description %></p>
+        <h3><%= project.title %></h3>
+        <p><%= project.description %></p>
         <p>
           <strong>Due:</strong>
-          <%= new Date(assignment.dueDate).toLocaleDateString('en-US', { year:
+          <%= new Date(project.dueDate).toLocaleDateString('en-US', { year:
           'numeric', month: 'long', day: 'numeric' }) %> @ <%= new
-          Date(assignment.dueDate).toLocaleTimeString('en-US', { hour:
+          Date(project.dueDate).toLocaleTimeString('en-US', { hour:
           'numeric', minute: '2-digit', hour12: true }) %>
         </p>
       </div>

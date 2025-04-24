@@ -71,6 +71,12 @@ router.get(
 );
 
 router.get(
+  "/courses/:courseId/subjects/:subjectId/projects",
+  isAuth, // Anyone logged in can view
+  subCon.getProjects
+);
+
+router.get(
   "/courses/:courseId/subjects/:subjectId/assignments/new",
   isAdmin,
   subCon.getAddAssignment
@@ -100,6 +106,31 @@ router.post(
       }),
   ],
   subCon.postAddAssignment
+);
+
+router.post(
+  "/courses/:courseId/subjects/:subjectId/projects",
+  isAdmin,
+  [
+    body(
+      "title",
+      "Project title is required and must be at least 3 characters."
+    )
+      .isString()
+      .isLength({ min: 3 })
+      .trim(),
+    body("description", "Description is required.").isLength({ min: 5 }).trim(),
+    body("dueDate", "Please enter a valid due date.")
+      .isISO8601() // Checks for YYYY-MM-DD format
+      .toDate() // Converts valid string to Date object
+      .custom((value, { req }) => {
+        if (value < new Date()) {
+          throw new Error("Due date cannot be in the past.");
+        }
+        return true;
+      }),
+  ],
+  subCon.postAddProject
 );
 
 router.get("/:courseId", isAuth, controller.getCourse);
