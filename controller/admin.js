@@ -83,40 +83,6 @@ exports.postAddSubject = async (req, res, next) => {
   }
 };
 
-// exports.getAssignments = async (req, res, next) => {
-//   const { courseId, subjectId } = req.params;
-//   try {
-//     const subject = await Subject.findOne({
-//       _id: subjectId,
-//       course: courseId,
-//     }).populate("course", "title"); // Populate course title for context
-
-//     if (!subject) {
-//       return throwError(
-//         "Subject not found or does not belong to this course.",
-//         404
-//       );
-//     }
-//     console.log("got here");
-
-//     res.render("admin/assignments-list", {
-//       pageTitle: `${subject.code} - Assignments`,
-//       path: `/courses/${courseId}/subjects/${subjectId}/assignments`,
-//       subject: subject,
-//       course: subject.course, // Pass the populated course object
-//       user: req.session.user, // Pass user for potential role checks in view
-//       isAuthenticated: req.session.isLoggedIn,
-//       userRole: req.session.user?.type, // Pass user role safely
-//     });
-//   } catch (err) {
-//     if (!err.statusCode) {
-//       err.statusCode = 500;
-//     }
-//     console.log(err);
-//     next(err); // Pass error to central error handler
-//   }
-// };
-
 exports.getAssignments = async (req, res, next) => {
   const { courseId, subjectId } = req.params;
   try {
@@ -181,23 +147,35 @@ exports.getAddAssignment = async (req, res, next) => {
       return req.flash("error", "Subject not found!");
     }
 
-    res.render("admin/add-assignment-form", {
-      pageTitle: `Add Assignment to ${subject.code}`,
-      path: `/courses/${courseId}/subjects/${subjectId}/assignments/new`,
-      subject: subject,
-      course: subject.course,
-      editing: false, // Flag for potential edit functionality later
-      hasError: false,
-      errorMessage: null,
-      validationErrors: [],
-      oldInput: { title: "", description: "", dueDate: "" }, // Initialize oldInput
-      csrfToken: req.csrfToken(), // Get CSRF token
-    });
+    res.render(
+      "admin/add-assignment-form",
+      {
+        pageTitle: `Add Assignment to ${subject.code}`,
+        path: `/courses/${courseId}/subjects/${subjectId}/assignments/new`,
+        subject: subject,
+        course: subject.course,
+        editing: false, // Flag for potential edit functionality later
+        hasError: false,
+        errorMessage: null,
+        validationErrors: [],
+        oldInput: { title: "", description: "", dueDate: "" }, // Initialize oldInput
+        csrfToken: req.csrfToken(), // Get CSRF token
+      },
+      (err, html) => {
+        if (err) {
+          console.error("EJS Render Error:", err);
+          return next(err); // Or res.status(500).send('Rendering error')
+        }
+        res.send(html);
+      }
+    );
+    console.log("Subject found:"); // Debugging line
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
-    next(err);
+    console.log("Error fetching subject for add assignment form:", err);
+    next(new Error(err));
   }
 };
 
@@ -213,7 +191,6 @@ exports.postAddAssignment = async (req, res, next) => {
       _id: subjectId,
       course: courseId,
     }).populate("course", "title"); // Need course title if re-rendering form
-
     if (!subject) {
       return req.flash("error", "Subject not found!");
     }
@@ -234,26 +211,24 @@ exports.postAddAssignment = async (req, res, next) => {
         csrfToken: req.csrfToken(),
       });
     }
-
     // Create the new assignment object (Mongoose subdocuments automatically get an _id)
     const newAssignment = {
       title: title,
       description: description,
       dueDate: new Date(dueDate), // Ensure it's a Date object
+      totalPoints: 0, // Initialize totalPoints to 0 or any default value
     };
-
     // Add to the assignments array
     subject.assignments.push(newAssignment);
-
     // Save the parent Subject document
     await subject.save();
-
     req.flash("success", "Assignment added successfully!"); // Add success message
     res.redirect(`/courses/${courseId}/subjects/${subjectId}/assignments`); // Redirect to the list
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+    console.log("Error adding assignment:", err);
     next(err);
   }
 };
@@ -297,6 +272,7 @@ exports.postAddProject = async (req, res, next) => {
       title: title,
       description: description,
       dueDate: new Date(dueDate), // Ensure it's a Date object
+      totalPoints: 0,
     };
 
     // Add to the assignments array

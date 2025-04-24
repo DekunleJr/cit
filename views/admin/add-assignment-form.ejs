@@ -20,12 +20,12 @@
                 href="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments"
                 style="color: white"
               >
-                <%= subject.code %> - Assignments
+                <%= subject.code %>
               </a>
             </li>
             <li class="active" style="color: white">Add New</li>
           </ol>
-          <h1>Add Assignment</h1>
+          <h1>Add Assignment or Project</h1>
           <h2>For: <%= subject.title %></h2>
         </div>
       </div>
@@ -35,13 +35,15 @@
   <section class="probootstrap-section">
     <div class="container">
       <div class="row">
-        <div class="col-md-8 col-md-offset-2 probootstrap-animate">
-          <% if (hasError) { %>
-          <div class="alert alert-danger mb30" role="alert">
-            <%= errorMessage %>
-          </div>
-          <% } %>
-
+          <div class="col-md-8 col-md-offset-2 probootstrap-animate">
+              <% if (hasError) { %>
+                <div class="alert alert-danger mb30" role="alert">
+                    <%= errorMessage %>
+                </div>
+                <% } %>
+                
+                <% const checkError = (fieldName) => validationErrors.find(e =>
+                e.param === fieldName); %>
           <form
             class="probootstrap-form"
             action="/courses/<%= course._id %>/subjects/<%= subject._id %>/assignments"
@@ -49,8 +51,6 @@
           >
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
 
-            <% const checkError = (fieldName) => validationErrors.find(e =>
-            e.param === fieldName); %>
 
             <div class="form-group mb30">
               <label for="title">Assignment Title</label>
@@ -125,9 +125,6 @@
             method="POST"
           >
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-
-            <% const checkError = (fieldName) => validationErrors.find(e =>
-            e.param === fieldName); %>
 
             <div class="form-group mb30">
               <label for="title">Project Title</label>
