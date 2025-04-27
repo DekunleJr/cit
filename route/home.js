@@ -133,6 +133,28 @@ router.post(
   subCon.postAddProject
 );
 
+router.get(
+  "/courses/:courseId/manage-students",
+  isAdmin,
+  subCon.getManageCourseStudents
+);
+
+router.post(
+  "/courses/:courseId/students/:studentId/update-scores",
+  isAdmin,
+  subCon.postUpdateStudentScores // New controller function
+);
+
+router.post(
+  "/courses/:courseId/add-student",
+  isAdmin,
+  [
+    // Add validation for the selected user ID
+    body("userIdToAdd", "Please select a user to add.").isMongoId(), // Check if it's a valid MongoDB ObjectId format
+  ],
+  subCon.postAddStudentToCourse // New controller function
+);
+
 router.get("/:courseId", isAuth, controller.getCourse);
 
 module.exports = router;

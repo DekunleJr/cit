@@ -98,9 +98,12 @@
               <!-- Admin: Add Subject Button -->
               <% if (isAuthenticated && userRole ==='admin' ) { %>
                 <hr class="my-3">
-                <a href="/admin/courses/<%= course._id %>/add-subject" class="btn btn-outline-secondary btn-block"> <!-- Changed to btn-block -->
-                   <!-- Changed me-2 to mr-2 -->
+                <a href="/admin/courses/<%= course._id %>/add-subject" class="btn btn-outline-secondary btn-block"> 
                    <i class="fas fa-plus-circle mr-2"></i>  Add Subject to Course
+                </a>
+
+                <a href="/courses/<%= course._id %>/manage-students" class="btn btn-outline-secondary btn-block"> 
+                   <i class="fas fa-user-cog mr-2"></i>  Manage Students
                 </a>
               <% } %>
 

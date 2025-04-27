@@ -1,0 +1,258 @@
+<%- include('../includes/head.ejs') %>
+<style>
+  .student-card {
+    border: 1px solid #e6e5e5; /* From .probootstrap-teacher */
+    padding: 20px;
+    margin-bottom: 30px; /* mb30 */
+    background-color: #fff;
+    border-radius: 4px;
+  }
+  /* Keep styles for inside the form */
+  .subject-scores {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+  }
+  .score-input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* mb10 */
+  }
+  .score-input-group label {
+    flex-basis: 60%;
+    margin-bottom: 0;
+    padding-right: 10px;
+    font-size: 0.9em;
+  }
+  .score-input-group label small {
+    color: #8b8e94;
+    font-size: 0.9em;
+  }
+  .score-input-group input {
+    flex-basis: 40%;
+    height: 35px;
+    padding: 5px 10px;
+  }
+  .add-student-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+    margin-bottom: 40px; /* mb40 */
+  }
+  /* Style for the collapsed form area */
+  .collapse-form-area {
+    margin-top: 20px; /* Add space above the form when opened */
+    padding-top: 20px;
+    border-top: 1px dashed #ccc; /* Visual separator */
+  }
+</style>
+<body>
+  <%- include('../includes/nav.ejs') %>
+
+  <!-- Header Section -->
+  <section class="probootstrap-section probootstrap-section-colored">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-left section-heading probootstrap-animate">
+          <h1>Manage Students</h1>
+          <h2>Course: <%= course.title %></h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Section -->
+  <section class="probootstrap-section">
+    <div class="container">
+      <!-- Flash Messages -->
+      <% if (errorMessage && errorMessage.length > 0) { %>
+      <div class="alert alert-danger mb30" role="alert">
+        <%= errorMessage[0] %>
+      </div>
+      <% } %> <% if (successMessage && successMessage.length > 0) { %>
+      <div class="alert alert-success mb30" role="alert">
+        <%= successMessage[0] %>
+      </div>
+      <% } %>
+
+      <!-- Add Existing User Section (Keep As Is) -->
+      <div class="row">
+        <div class="col-md-12 probootstrap-animate">
+          <div class="add-student-section">
+            <!-- ... add user form ... -->
+            <h3 class="mt0 mb20">Add Existing User to Course</h3>
+            <% if (unenrolledUsers.length > 0) { %>
+            <form
+              action="/courses/<%= course._id %>/add-student"
+              method="POST"
+              class="form-inline"
+            >
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <div class="form-group mb-2 mr-sm-2">
+                <label for="userIdToAdd" class="sr-only">Select User</label>
+                <select
+                  name="userIdToAdd"
+                  id="userIdToAdd"
+                  class="form-control"
+                  required
+                >
+                  <option value="" disabled selected>-- Select User --</option>
+                  <% unenrolledUsers.forEach(user => { %>
+                  <option value="<%= user._id %>">
+                    <%= user.lastname %>, <%= user.firstname %> (<%= user.email
+                    %>)
+                  </option>
+                  <% }); %>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary mb-2">
+                <i class="icon-plus"></i> Add Student
+              </button>
+            </form>
+            <% } else { %>
+            <p class="text-muted">
+              All registered users are already enrolled in this course.
+            </p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <!-- End Add User Section -->
+
+      <hr class="mt40 mb40" />
+      <!-- Separator -->
+
+      <!-- Enrolled Students List & Score Editing -->
+      <div class="row">
+        <div class="col-md-12 probootstrap-animate">
+          <h3 class="mt0 mb30">
+            Enrolled Students (<%= enrolledStudents.length %>)
+          </h3>
+
+          <% if (enrolledStudents.length === 0) { %>
+          <div class="alert alert-info">
+            No students are currently enrolled in this course.
+          </div>
+          <% } else { %> <% enrolledStudents.forEach(student => { %>
+          <div class="student-card">
+            <!-- VISIBLE PART -->
+            <h4><%= student.firstname %> <%= student.lastname %></h4>
+            <p class="text-muted mb20"><%= student.email %></p>
+
+            <!-- TOGGLE BUTTON -->
+            <button
+              class="btn btn-outline-secondary btn-sm"
+              type="button"
+              data-toggle="collapse"
+              data-target="#collapseScores_<%= student._id %>"
+              aria-expanded="false"
+              aria-controls="collapseScores_<%= student._id %>"
+            >
+              <i class="icon-pencil"></i> Edit Scores
+            </button>
+            <!-- END TOGGLE BUTTON -->
+
+            <!-- COLLAPSIBLE AREA -->
+            <div
+              class="collapse collapse-form-area"
+              id="collapseScores_<%= student._id %>"
+            >
+              <form
+                action="courses/<%= course._id %>/students/<%= student._id %>/update-scores"
+                method="POST"
+              >
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+                <% if (course.subjects && course.subjects.length > 0) { %> 
+                    <% course.subjects.forEach(subject => { %>
+                <div class="subject-scores">
+                  <h5><%= subject.title %> (<%= subject.code %>)</h5>
+                  <% const studentSubjectProgress = student.progressMap[String(subject._id)]; %> 
+                   <% if(subject.assignments && subject.assignments.length > 0) { %>
+                  <h6>Assignments:</h6>
+                  <% subject.assignments.forEach(assignment => { %> 
+                    <% const assignmentId = String(assignment._id); %> 
+                    <% const assignmentProgress = studentSubjectProgress?.assignments[assignmentId]; %> 
+                    <% const currentGrade = (assignmentProgress && typeof assignmentProgress.grade !== 'undefined') ? assignmentProgress.grade : ''; %>
+                  <div class="score-input-group">
+                    <label
+                      for="score_<%= student._id %>_<%= subject._id %>_a_<%= assignmentId %>"
+                    >
+                      <%= assignment.title %>
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="score_<%= student._id %>_<%= subject._id %>_a_<%= assignmentId %>"
+                      name="scores[<%= subject._id %>][assignment][<%= assignmentId %>]"
+                      value="<%= currentGrade %>"
+                      min="0"
+                      step="any" placeholder="Score" >
+                  </div>
+                  <% }); %> 
+                  <% } else { %>
+                  <p class="text-muted small">
+                    No assignments for this subject.
+                  </p>
+                  <% } %> 
+                  <% if(subject.projects && subject.projects.length > 0) { %>
+                  <h6 class="mt20">Projects:</h6>
+                  <% subject.projects.forEach(project => { %> 
+                    <% const projectId = String(project._id); %> 
+                    <% const projectProgress = studentSubjectProgress?.projects[projectId]; %> 
+                    <% const currentGrade = (projectProgress && typeof projectProgress.grade !== 'undefined') ? projectProgress.grade : ''; %>
+                  <div class="score-input-group">
+                    <label
+                      for="score_<%= student._id %>_<%= subject._id %>_p_<%= projectId %>"
+                    >
+                      <%= project.title %>
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="score_<%= student._id %>_<%= subject._id %>_p_<%= projectId %>"
+                      name="scores[<%= subject._id %>][project][<%= projectId %>]"
+                      value="<%= currentGrade %>"
+                      min="0"
+                      step="any"
+                      placeholder="Score"
+                    />
+                  </div>
+                  <% }); %> 
+                  <% } else { %>
+                  <p class="text-muted small mt20">
+                    No projects for this subject.
+                  </p>
+                  <% } %>
+                </div>
+                <!-- /.subject-scores -->
+                <% }); %> <% } else { %>
+                <p class="text-muted">
+                  No subjects defined for this course yet.
+                </p>
+                <% } %>
+
+                <div class="text-right mt30">
+                  <button type="submit" class="btn btn-success btn-sm">
+                    <i class="icon-check"></i> Save Scores <%# Optional: Remove
+                    "for student..." from button text as it's implied by context
+                    %>
+                  </button>
+                </div>
+              </form>
+            </div>
+            <!-- /.collapse -->
+            <!-- END COLLAPSIBLE AREA -->
+          </div>
+          <!-- /.student-card -->
+          <% }); %> 
+          <% } %>
+        </div>
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container -->
+  </section>
+
+  <%- include('../includes/footer.ejs') %> <%- include('../includes/end.ejs') %>
