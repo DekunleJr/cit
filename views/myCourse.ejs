@@ -1,16 +1,32 @@
 <%- include('includes/head.ejs') %>
 <title><%= user.firstname %>'s Dashboard</title>
+<!-- Add Font Awesome if not already included -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+  /* Optional: Styles for the progress bar/score display - Copied from previous example */
+  .progress { height: 10px; margin-bottom: 5px; background-color: #e9ecef; }
+  .score-display { font-weight: bold; }
+  .score-display.good { color: #28a745; } /* Green */
+  .score-display.ok { color: #ffc107; } /* Yellow */
+  .score-display.bad { color: #dc3545; } /* Red */
+  .no-score { color: #6c757d; font-style: italic; font-size: 0.9em; }
+  .subject-details-links a { margin-top: 5px; } /* Space out links */
+  /* Your probootstrap styles (.profile-card etc) */
+  .profile-card { background: #fff; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: #eee; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #aaa;}
+  .details-list li { margin-bottom: 8px; display: flex; align-items: center; }
+  .details-list li i { width: 25px; text-align: center; color: #007bff; margin-right: 5px; }
+</style>
 </head>
 
 <body>
   <%- include('includes/nav.ejs') %>
 
-  <!-- ... (keep Welcome Header) ... -->
-     <section class="probootstrap-section probootstrap-section-colored">
+  <!-- Welcome Header -->
+   <section class="probootstrap-section probootstrap-section-colored">
     <div class="container">
       <div class="row">
         <div class="col-md-12 text-center probootstrap-animate">
-          <!-- Use fadeInUp animation or similar if available in probootstrap -->
           <h1 class="text-white mb-1">Welcome, <%= user.firstname %>!</h1>
           <p class="text-white lead" style="font-size: 2.1rem;">Here's your personal dashboard.</p>
         </div>
@@ -18,76 +34,135 @@
     </div>
   </section>
 
+  <!-- Main Content Section -->
   <section class="probootstrap-section">
     <div class="container">
       <div class="row">
         <!-- Column 1: User Profile Card -->
         <div class="col-lg-4 col-md-5 mb-4 mb-md-0 probootstrap-animate">
-          <!-- Use fadeInLeft animation or similar -->
           <div class="profile-card">
-            <div class="card-body text-center">
-              <!-- Placeholder Avatar - Replace with real image logic if available -->
+            <div class="card-body text-center p-4"> 
               <div class="profile-avatar">
-                <i class="fas fa-user"></i> <!-- Font Awesome user icon -->
+                <i class="fas fa-user"></i>
               </div>
               <h4 class="card-title"><%= user.firstname %> <%= user.lastname %></h4>
               <p class="text-muted mb-4"><%= user.type %> Account</p>
 
-              <ul class="list-unstyled text-left details-list">
-                <li><i class="fas fa-envelope"></i> <%= user.email %></li>
-                <li><i class="fas fa-graduation-cap"></i> <%= course.length %> Registered Course<%= course.length !== 1 ? 's' : '' %></li>
-                <!-- Add more user details here if needed -->
-                <!-- Example: <li><i class="fas fa-calendar-alt"></i> Member Since: [Date]</li> -->
-                <!-- Example: <li><i class="fas fa-phone"></i> [Phone Number]</li> -->
+              <ul class="list-unstyled text-left details-list pl-3"> 
+                <li><i class="fas fa-envelope fa-fw"></i> <%= user.email %></li>
+                <li><i class="fas fa-graduation-cap fa-fw"></i> <%= course.length %> Registered Course<%= course.length !== 1 ? 's' : '' %></li>
               </ul>
-
-              <!-- Action Buttons -->
-              <!-- <a href="/edit-profile" class="btn btn-primary btn-sm mb-2 w-100"><i class="fas fa-user-edit me-1"></i> Edit Profile</a> -->
-              <a href="/reset" class="btn btn-outline-secondary btn-sm w-100"><i class="fas fa-key me-1"></i> Change Password</a>
+              <a href="/reset" class="btn btn-sm btn-outline-secondary btn-block mt-3"><i class="fas fa-key mr-1"></i> Change Password</a>
             </div>
           </div>
         </div>
 
-        <!-- Column 2: Registered Courses and their Subjects -->
+        <!-- Column 2: Registered Courses -->
         <div class="col-lg-8 col-md-7 probootstrap-animate">
 
-          <% if (!user.purchasedCourses || user.purchasedCourses.length === 0) { %>
-            <!-- ... (Keep 'No Courses Yet' message) ... -->
+          <% if (!course || course.length === 0) { %>
             <div class="alert alert-info" role="alert">
-              <h4 class="alert-heading"><i class="fas fa-info-circle"></i> No Courses Yet!</h4>
-              <p>You haven't registered for any course programs. Ready to start learning?</p>
-              <hr>
-              <a href="/courses" class="btn btn-primary btn-sm mb-0"><i class="fas fa-search"></i> Browse Course Programs</a>
+                <h4 class="alert-heading"><i class="fas fa-info-circle"></i> No Courses Yet!</h4>
+                <p>You haven't registered for any course programs. Ready to start learning?</p>
+                <hr>
+                <a href="/courses" class="btn btn-primary btn-sm mb-0"><i class="fas fa-search"></i> Browse Course Programs</a>
             </div>
           <% } else { %>
-            <!-- Iterate over each MAIN course program the user purchased -->
-            <% user.purchasedCourses.forEach(program => { %>
-              <div class="mb-5"> <!-- Add spacing between programs -->
+            <!-- Iterate over the 'course' array (aliased as program) -->
+            <% course.forEach(program => { %>
+              <div class="mb-5">
                 <h2 class="mb-3"><%= program.title %></h2>
                 <p><%= program.description %></p>
                 <hr>
-                <h3 class="mb-3">Subjects in this Program:</h3>
+                <h3 class="mb-3">Subjects & Progress:</h3>
 
                 <% if (!program.subjects || program.subjects.length === 0) { %>
                   <p class="text-muted">No subjects listed for this program yet.</p>
                 <% } else { %>
                   <div class="list-group">
-                    <!-- Iterate over the SUBJECTS within the current program -->
+                    <!-- Iterate over the SUBJECTS (now enriched with scores) -->
                     <% program.subjects.forEach(subject => { %>
-                      <div class="list-group-item list-group-item-action flex-column align-items-start mb-3">
+                      <% if(subject) { %>
+                      <div class="list-group-item flex-column align-items-start mb-3">
                         <div class="d-flex w-100 justify-content-between">
                           <h5 class="mb-1"><%= subject.title %> (<%= subject.code %>)</h5>
-                          <small><%= subject.units %> unit<%= subject.units !== 1 ? 's' : '' %></small>
+                          <small class="text-muted"><%= subject.units %> unit<%= subject.units !== 1 ? 's' : '' %></small>
                         </div>
-                        <!-- Placeholder for links to subject details -->
-                        <div class="mt-2">
-                           <!-- These links would go to new routes/views -->
-                           <a href="/courses/<%= program._id %>/subjects/<%= subject._id %>/assignments" class="btn btn-sm btn-outline-info me-2"><i class="fas fa-tasks"></i> Assignments</a>
-                           <a href="/courses/<%= program._id %>/subjects/<%= subject._id %>/projects" class="btn btn-sm btn-outline-success me-2"><i class="fas fa-lightbulb"></i> Projects</a>
-                        </div>
-                         
 
-                      </div>
+                        <!-- === Average Score Display === -->
+                        <div class="mt-2 mb-2">
+                            <% if (subject.averageScore !== null && typeof subject.averageScore === 'number') { %>
+                              <% const score = subject.averageScore; %>
+                              <% const scoreClass = score >= 80 ? 'good' : (score >= 60 ? 'ok' : 'bad'); %>
+                              <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-<%= score >= 80 ? 'success' : (score >= 60 ? 'warning' : 'danger') %>" role="progressbar" style="width: <%= score.toFixed(0) %>%" aria-valuenow="<%= score.toFixed(0) %>" aria-valuemin="0" aria-valuemax="100"></div>
+                              </div>
+                              <span class="score-display <%= scoreClass %>" style="font-weight: bold;">
+                                Average: <%= score.toFixed(1) %>%
+                              </span>
+                              <small class="text-muted">(based on <%= subject.gradedItemsCount %> graded item<%= subject.gradedItemsCount !== 1 ? 's' : '' %>)</small>
+                            <% } else if (subject.gradedItemsCount === 0) { %>
+                               <small class="no-score text-muted font-italic">No graded items yet</small>
+                            <% } else { %>
+                               <small class="no-score text-muted font-italic">Average not available</small>
+                            <% } %>
+                        </div>
+                        <!-- === End Average Score Display === -->
+
+                        <!-- Links to Subject Details -->
+                        <div class="mt-2 d-flex subject-details-links">
+                            <a href="/courses/<%= program._id %>/subjects/<%= subject._id %>/assignments" class="btn btn-sm btn-outline-info mr-2"><i class="fas fa-tasks fa-fw"></i> Assignments</a>
+                            <a href="/courses/<%= program._id %>/subjects/<%= subject._id %>/projects" class="btn btn-sm btn-outline-success mr-2"><i class="fas fa-lightbulb fa-fw"></i> Projects</a>
+                        </div>
+
+                        <!-- === Individual Scores Section === -->
+                        <div class="mt-3 pt-2 border-top">
+                          <small class="text-muted d-block mb-2">Item Scores:</small>
+                          <% const hasAssignments = subject.detailedAssignmentProgress && subject.detailedAssignmentProgress.length > 0; %>
+                          <% const hasProjects = subject.detailedProjectProgress && subject.detailedProjectProgress.length > 0; %>
+
+                          <% if (!hasAssignments && !hasProjects) { %>
+                              <small class="text-muted font-italic">No individual scores available yet.</small>
+                          <% } else { %>
+                              <% if (hasAssignments) { %>
+                                  <% subject.detailedAssignmentProgress.forEach(assignProg => { %>
+                                      <div class="d-flex justify-content-between align-items-center mb-1">
+                                          <small><i class="fas fa-tasks fa-fw text-info mr-1"></i> <%= assignProg.title %></small>
+                                          <small>
+                                              <% if (assignProg.status === 'Graded' && typeof assignProg.grade === 'number' && typeof assignProg.totalPoints === 'number') { %>
+                                                  <span class="badge badge-success"><%= assignProg.grade %> / <%= assignProg.totalPoints %></span>
+                                              <% } else if (assignProg.status === 'Submitted') { %>
+                                                  <span class="badge badge-warning">Submitted</span>
+                                              <% } else { %>
+                                                  <span class="badge badge-light text-muted">Pending</span>
+                                              <% } %>
+                                          </small>
+                                      </div>
+                                  <% }); %>
+                              <% } %>
+                              <% if (hasProjects) { %>
+                                   <% if (hasAssignments) { %> <hr style="margin: 5px 0;"> <% } %>
+                                  <% subject.detailedProjectProgress.forEach(projProg => { %>
+                                      <div class="d-flex justify-content-between align-items-center mb-1">
+                                          <small><i class="fas fa-lightbulb fa-fw text-success mr-1"></i> <%= projProg.title %></small>
+                                          <small>
+                                             <% if (projProg.status === 'Graded' && typeof projProg.grade === 'number' && typeof projProg.totalPoints === 'number') { %>
+                                                  <span class="badge badge-success"><%= projProg.grade %> / <%= projProg.totalPoints %></span>
+                                              <% } else if (projProg.status === 'Submitted') { %>
+                                                  <span class="badge badge-warning">Submitted</span>
+                                              <% } else { %>
+                                                  <span class="badge badge-light text-muted">Pending</span>
+                                              <% } %>
+                                          </small>
+                                      </div>
+                                  <% }); %>
+                              <% } %>
+                          <% } %>
+                        </div>
+                        <!-- === End Individual Scores Section === -->
+
+                      </div> <!-- End list-group-item -->
+                     <% } %>
                     <% }); %>
                   </div>
                 <% } %>
@@ -101,3 +176,4 @@
 
   <%- include('includes/footer.ejs') %>
   <%- include('includes/end.ejs') %>
+</body>

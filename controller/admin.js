@@ -2,6 +2,7 @@ const Course = require("../models/course");
 const Subject = require("../models/subject");
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
+const mongoose = require("mongoose");
 
 exports.getAddSubject = async (req, res, next) => {
   try {
@@ -68,10 +69,6 @@ exports.postAddSubject = async (req, res, next) => {
     // 4. Add the new Subject's ID to the Course's 'subjects' array
     course.subjects.push(savedSubject._id); // Add the ObjectId
     await course.save(); // Save the updated course document
-
-    console.log(
-      `Subject '${savedSubject.title}' added to course '${course.title}'`
-    );
 
     // 5. Redirect to a relevant page (e.g., the course detail page)
     req.flash("success", "Subject added successfully!");
@@ -170,7 +167,6 @@ exports.getAddAssignment = async (req, res, next) => {
         res.send(html);
       }
     );
-    console.log("Subject found:"); // Debugging line
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -182,7 +178,7 @@ exports.getAddAssignment = async (req, res, next) => {
 
 exports.postAddAssignment = async (req, res, next) => {
   const { courseId, subjectId } = req.params;
-  const { title, description, dueDate } = req.body;
+  const { title, description, dueDate, totalPoints } = req.body;
   const errors = validationResult(req);
 
   let subject; // Declare subject here to access it in catch block if needed
@@ -208,7 +204,7 @@ exports.postAddAssignment = async (req, res, next) => {
         hasError: true,
         errorMessage: errors.array()[0].msg, // Show the first error message
         validationErrors: errors.array(),
-        oldInput: { title, description, dueDate }, // Pass back user's input
+        oldInput: { title, description, dueDate, totalPoints }, // Pass back user's input
         csrfToken: req.csrfToken(),
       });
     }
@@ -217,7 +213,7 @@ exports.postAddAssignment = async (req, res, next) => {
       title: title,
       description: description,
       dueDate: new Date(dueDate), // Ensure it's a Date object
-      totalPoints: 0, // Initialize totalPoints to 0 or any default value
+      totalPoints: totalPoints, // Initialize totalPoints to 0 or any default value
     };
     // Add to the assignments array
     subject.assignments.push(newAssignment);
@@ -236,7 +232,7 @@ exports.postAddAssignment = async (req, res, next) => {
 
 exports.postAddProject = async (req, res, next) => {
   const { courseId, subjectId } = req.params;
-  const { title, description, dueDate } = req.body;
+  const { title, description, dueDate, totalPoints } = req.body;
   const errors = validationResult(req);
 
   let subject; // Declare subject here to access it in catch block if needed
@@ -263,7 +259,7 @@ exports.postAddProject = async (req, res, next) => {
         hasError: true,
         errorMessage: errors.array()[0].msg, // Show the first error message
         validationErrors: errors.array(),
-        oldInput: { title, description, dueDate }, // Pass back user's input
+        oldInput: { title, description, dueDate, totalPoints }, // Pass back user's input
         csrfToken: req.csrfToken(),
       });
     }
@@ -273,7 +269,7 @@ exports.postAddProject = async (req, res, next) => {
       title: title,
       description: description,
       dueDate: new Date(dueDate), // Ensure it's a Date object
-      totalPoints: 0,
+      totalPoints: totalPoints,
     };
 
     // Add to the assignments array
@@ -370,7 +366,6 @@ exports.getManageCourseStudents = async (req, res, next) => {
       .sort({ lastname: 1, firstname: 1 });
 
     res.render("admin/manage-students", {
-      // New view: views/admin/manage-students.ejs
       pageTitle: `Manage Students: ${course.title}`,
       path: `/admin/courses/${courseId}/manage-students`, // For active nav link
       course: course, // Contains full subject definitions needed for iteration
@@ -392,10 +387,14 @@ exports.getManageCourseStudents = async (req, res, next) => {
 // --- Controller for Updating Student Scores ---
 exports.postUpdateStudentScores = async (req, res, next) => {
   const { courseId, studentId } = req.params;
-  const scores = req.body.scores; // Expected format: scores[subjectId][assignment/project][itemId] = grade
+  const submittedData = req.body;
+  const scoreKeyRegex =
+    /^scores\[([a-f0-9]+)\]\[(assignment|project)\]\[([a-f0-9]+)\]$/;
 
   try {
-    const student = await User.findById(studentId);
+    const student = await User.findById(studentId).populate(
+      "subjectProgress.subject"
+    ); // Populate subject if needed for context/validation later
     if (!student) {
       req.flash("error", "Student not found.");
       return res.redirect(`/courses/${courseId}/manage-students`);
@@ -403,79 +402,104 @@ exports.postUpdateStudentScores = async (req, res, next) => {
 
     let changesMade = false;
 
-    // Iterate through the submitted scores
-    for (const subjectId in scores) {
-      // Find the corresponding progress entry for this subject in the student's record
-      const progressEntry = student.subjectProgress?.find(
-        (p) => String(p.subject) === subjectId
-      );
-      if (!progressEntry) continue; // Skip if student has no progress for this subject
+    // Iterate through all keys in the submitted form data
+    for (const key in submittedData) {
+      const match = key.match(scoreKeyRegex);
 
-      // Update Assignments
-      if (scores[subjectId]?.assignment) {
-        for (const assignmentId in scores[subjectId].assignment) {
-          const grade = scores[subjectId].assignment[assignmentId];
-          const assignmentProgress = progressEntry.assignments?.find(
-            (a) => String(a.assignmentId) === assignmentId
+      if (match) {
+        const [, subjectId, itemType, itemId] = match; // Destructure the captured groups
+        const gradeStr = submittedData[key]; // Get the score value (as a string)
+
+        // Find the corresponding progress entry for this subject
+        const progressEntry = student.subjectProgress?.find(
+          (p) => p.subject?._id?.toString() === subjectId // Safely compare IDs
+        );
+
+        if (!progressEntry) {
+          console.warn(
+            `No progress entry found for student ${studentId}, subject ${subjectId}. Skipping score.`
+          );
+          continue; // Skip if student has no progress for this subject
+        }
+
+        // Validate the grade string - check if empty or not a valid number representation
+        const gradeNum = parseFloat(gradeStr);
+        const isEmptyInput = gradeStr.trim() === "";
+        const isInvalidNumber = isNaN(gradeNum);
+
+        // Handle Assignments
+        if (itemType === "assignment") {
+          let assignmentProgress = progressEntry.assignments?.find(
+            (a) => a.assignmentId?.toString() === itemId
           );
 
-          // Validate grade (basic - is number?) - add more robust validation if needed
-          const gradeNum = parseFloat(grade);
-          if (grade.trim() === "" || isNaN(gradeNum)) {
-            // Allow empty input to clear grade? Or require number? Let's allow clearing for now.
-            if (assignmentProgress) {
-              assignmentProgress.grade = undefined; // Clear grade
-              assignmentProgress.status = "Pending"; // Reset status
+          // Handle empty/invalid input - Clear the grade
+          if (isEmptyInput || isInvalidNumber) {
+            if (
+              assignmentProgress &&
+              typeof assignmentProgress.grade !== "undefined"
+            ) {
+              // Only clear if it had a grade
+              assignmentProgress.grade = undefined;
+              assignmentProgress.status = "Pending"; // Or whatever default status is
               changesMade = true;
             }
-            continue; // Skip to next item if input is empty or not a number
+            continue; // Move to the next key
           }
 
+          // Handle valid number input
           if (assignmentProgress) {
-            // Check if grade actually changed to avoid unnecessary saves/updates
+            // Update existing progress
             if (
               assignmentProgress.grade !== gradeNum ||
               assignmentProgress.status !== "Graded"
             ) {
               assignmentProgress.grade = gradeNum;
-              assignmentProgress.status = "Graded"; // Mark as graded
+              assignmentProgress.status = "Graded";
               changesMade = true;
             }
           } else {
-            // Assignment progress doesn't exist, create it (should ideally exist from enrollment)
+            // Create new progress entry (use with caution - ensure itemId is valid)
+            if (!mongoose.Types.ObjectId.isValid(itemId)) {
+              console.error(
+                `Invalid assignment ID format: ${itemId}. Skipping.`
+              );
+              continue;
+            }
             progressEntry.assignments.push({
-              assignmentId: assignmentId, // Relies on assignmentId being a valid ObjectId string
+              assignmentId: itemId, // Store as ObjectId if possible, or ensure consistency
               grade: gradeNum,
               status: "Graded",
-              submittedDate: new Date(), // Mark grading date?
+              submittedDate: new Date(), // Or maybe null?
             });
             changesMade = true;
             console.warn(
-              `Created missing assignment progress for student ${studentId}, subject ${subjectId}, assignment ${assignmentId}`
+              `Created missing assignment progress for ${itemId}, score ${gradeNum}`
             );
           }
         }
-      }
-
-      // Update Projects (similar logic)
-      if (scores[subjectId]?.project) {
-        for (const projectId in scores[subjectId].project) {
-          const grade = scores[subjectId].project[projectId];
-          const projectProgress = progressEntry.projects?.find(
-            (p) => String(p.projectId) === projectId
+        // Handle Projects (similar logic)
+        else if (itemType === "project") {
+          let projectProgress = progressEntry.projects?.find(
+            (p) => p.projectId?.toString() === itemId
           );
 
-          const gradeNum = parseFloat(grade);
-          if (grade.trim() === "" || isNaN(gradeNum)) {
-            if (projectProgress) {
+          // Handle empty/invalid input - Clear the grade
+          if (isEmptyInput || isInvalidNumber) {
+            if (
+              projectProgress &&
+              typeof projectProgress.grade !== "undefined"
+            ) {
               projectProgress.grade = undefined;
               projectProgress.status = "Pending";
               changesMade = true;
             }
-            continue;
+            continue; // Move to the next key
           }
 
+          // Handle valid number input
           if (projectProgress) {
+            // Update existing progress
             if (
               projectProgress.grade !== gradeNum ||
               projectProgress.status !== "Graded"
@@ -485,20 +509,25 @@ exports.postUpdateStudentScores = async (req, res, next) => {
               changesMade = true;
             }
           } else {
+            // Create new progress entry (use with caution)
+            if (!mongoose.Types.ObjectId.isValid(itemId)) {
+              console.error(`Invalid project ID format: ${itemId}. Skipping.`);
+              continue;
+            }
             progressEntry.projects.push({
-              projectId: projectId,
+              projectId: itemId,
               grade: gradeNum,
               status: "Graded",
               submittedDate: new Date(),
             });
             changesMade = true;
             console.warn(
-              `Created missing project progress for student ${studentId}, subject ${subjectId}, project ${projectId}`
+              `Created missing project progress for ${itemId}, score ${gradeNum}`
             );
           }
         }
-      }
-    } // End loop through subjects in scores
+      } // End if (match)
+    } // End loop through submittedData keys
 
     if (changesMade) {
       await student.save();
@@ -517,8 +546,10 @@ exports.postUpdateStudentScores = async (req, res, next) => {
   } catch (err) {
     console.error("Error updating student scores:", err);
     req.flash("error", "Failed to update scores. Please try again.");
+    // Determine the redirect target based on where the error occurred if possible
     res.redirect(`/courses/${courseId}/manage-students`);
-    // Consider passing error to next(err) for more detailed logging/handling
+    // Consider using next(err) for more robust error handling/logging
+    // next(err);
   }
 };
 

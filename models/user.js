@@ -19,6 +19,7 @@ const subjectProgressSchema = new Schema(
         },
         submittedDate: Date,
         grade: Number,
+        totalPoints: Number,
         feedback: String,
         fileUrl: String, // Link to submitted file
       },
@@ -33,6 +34,7 @@ const subjectProgressSchema = new Schema(
         },
         submittedDate: Date,
         grade: Number,
+        totalPoints: Number,
         feedback: String,
         fileUrl: String,
       },

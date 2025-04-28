@@ -129,42 +129,216 @@ exports.getTeacher = async (req, res, next) => {
   }
 };
 
-exports.getMyCourses = async (req, res) => {
+// exports.getMyCourses = async (req, res, next) => {
+//   try {
+//     const userId = req.session.user._id;
+
+//     const user = await User.findById(userId).populate({
+//       path: "purchasedCourses",
+//       populate: {
+//         path: "subjects",
+//       },
+//     });
+
+//     if (!user) {
+//       return res.status(404).render("error", {
+//         pageTitle: "Error",
+//         message: "User not found",
+//       });
+//     }
+
+//     // Get the purchased courses (populated from the User model)
+//     const myCourses = user.purchasedCourses;
+
+//     // Render the "My Courses" page
+//     res.render("myCourse", {
+//       pageTitle: "My Courses",
+//       path: "/myCourses",
+//       course: myCourses,
+//       user: user,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching user courses:", error);
+//     if (!error.statusCode) {
+//       error.statusCode = 500;
+//     }
+//     next(new Error(error));
+//   }
+// };
+
+exports.getMyCourses = async (req, res, next) => {
   try {
-    const userId = req.session.user._id;
+    const userId = req.session.user._id; // Or req.user._id if populated by middleware
 
-    // const user = await User.findById(userId).populate("purchasedCourses");
-
-    const user = await User.findById(userId).populate({
-      path: "purchasedCourses",
-      populate: {
-        path: "subjects",
-      },
-    });
+    // 1. Fetch User with Populated Data
+    // Need courses, their basic subjects, AND the user's progress details
+    const user = await User.findById(userId)
+      .populate({
+        path: "purchasedCourses", // Populate courses
+        select: "title _id description subjects", // Select fields needed for the course itself
+        populate: {
+          path: "subjects", // Populate basic subject info within each course
+          select: "title code units _id", // Fields needed for basic display
+        },
+      })
+      // IMPORTANT: Populate subjectProgress and the subject linked within it
+      .populate({
+        path: "subjectProgress.subject",
+        select: "title code _id", // Basic info for matching
+      })
+      .lean(); // Use .lean() for performance and easier object manipulation
 
     if (!user) {
+      // If using .lean(), user will be null, not an object with no properties
       return res.status(404).render("error", {
+        // Or redirect, or throw error
         pageTitle: "Error",
         message: "User not found",
       });
     }
 
-    // Get the purchased courses (populated from the User model)
-    const myCourses = user.purchasedCourses;
+    // --- Calculation Logic ---
+    let subjectDataMap = {}; // Store calculated { subjectId: { enrichedData } }
 
-    // Render the "My Courses" page
+    if (user.subjectProgress && user.subjectProgress.length > 0) {
+      // 2. Get IDs of subjects user has progress for
+      const subjectIdsWithProgress = user.subjectProgress
+        .map((p) => p.subject?._id) // Get subject ObjectId from progress
+        .filter((id) => id) // Filter out any null/undefined refs
+        .map((id) => id.toString()); // Convert to strings for consistent map keys
+
+      if (subjectIdsWithProgress.length > 0) {
+        // 3. Fetch full definitions for these subjects
+        const subjectDefinitions = await Subject.find({
+          _id: { $in: subjectIdsWithProgress },
+        })
+          // Ensure totalPoints is selected within assignments/projects
+          .select("_id assignments projects title code units")
+          .lean(); // Use lean here too
+
+        const subjectDefinitionsMap = new Map(
+          subjectDefinitions.map((s) => [s._id.toString(), s])
+        );
+        const userProgressMap = new Map(
+          user.subjectProgress.map((p) => [p.subject?._id?.toString(), p])
+        );
+
+        // 4. Calculate average and prepare detailed progress for each subject
+        for (const subjectIdStr of subjectDefinitionsMap.keys()) {
+          const definition = subjectDefinitionsMap.get(subjectIdStr);
+          const progress = userProgressMap.get(subjectIdStr);
+
+          if (!definition || !progress) continue;
+
+          let totalScore = 0;
+          let totalPossible = 0;
+          let gradedItemsCount = 0;
+
+          const assignmentPointsMap = new Map(
+            definition.assignments.map((a) => [a._id.toString(), a.totalPoints])
+          );
+          const projectPointsMap = new Map(
+            definition.projects.map((p) => [p._id.toString(), p.totalPoints])
+          );
+
+          // Detailed Assignment Progress Calculation
+          const detailedAssignmentProgress =
+            progress.assignments?.map((ua) => {
+              const assignmentIdStr = ua.assignmentId?.toString();
+              const def = definition.assignments.find(
+                (a) => a._id.toString() === assignmentIdStr
+              );
+              const pointsPossible = assignmentPointsMap.get(assignmentIdStr);
+              if (
+                ua.status === "Graded" &&
+                typeof ua.grade === "number" &&
+                typeof pointsPossible === "number"
+              ) {
+                totalScore += ua.grade;
+                totalPossible += pointsPossible;
+                gradedItemsCount++;
+              }
+              return {
+                _id: ua.assignmentId,
+                title: def?.title || "Assignment Missing",
+                status: ua.status,
+                grade: ua.grade,
+                totalPoints: pointsPossible,
+              };
+            }) || [];
+
+          // Detailed Project Progress Calculation
+          const detailedProjectProgress =
+            progress.projects?.map((up) => {
+              const projectIdStr = up.projectId?.toString();
+              const def = definition.projects.find(
+                (p) => p._id.toString() === projectIdStr
+              );
+              const pointsPossible = projectPointsMap.get(projectIdStr);
+              if (
+                up.status === "Graded" &&
+                typeof up.grade === "number" &&
+                typeof pointsPossible === "number"
+              ) {
+                totalScore += up.grade;
+                totalPossible += pointsPossible;
+                gradedItemsCount++;
+              }
+              return {
+                _id: up.projectId,
+                title: def?.title || "Project Missing",
+                status: up.status,
+                grade: up.grade,
+                totalPoints: pointsPossible,
+              };
+            }) || [];
+
+          // Calculate Average
+          let averageScore = null;
+          if (totalPossible > 0) {
+            averageScore = (totalScore / totalPossible) * 100;
+          }
+
+          // Store combined data
+          subjectDataMap[subjectIdStr] = {
+            _id: definition._id,
+            title: definition.title,
+            code: definition.code,
+            units: definition.units,
+            averageScore,
+            gradedItemsCount,
+            detailedAssignmentProgress,
+            detailedProjectProgress,
+          };
+        }
+      }
+    }
+
+    // 5. Inject calculated data back into the user's course structure
+    // Since we used .lean(), user is a plain object, we can modify it
+    if (user.purchasedCourses && Array.isArray(user.purchasedCourses)) {
+      user.purchasedCourses.forEach((course) => {
+        if (course.subjects && Array.isArray(course.subjects)) {
+          course.subjects = course.subjects
+            .map((subject) => subjectDataMap[subject._id.toString()]) // Replace basic subject with enriched data
+            .filter((subject) => subject !== undefined); // Remove subjects if no enriched data was found (optional)
+        }
+      });
+    }
+
+    // 6. Render the view
     res.render("myCourse", {
       pageTitle: "My Courses",
       path: "/myCourses",
-      course: myCourses,
+      course: user.purchasedCourses,
       user: user,
     });
   } catch (error) {
-    console.error("Error fetching user courses:", error);
-    res.status(500).render("error", {
-      pageTitle: "Error",
-      message: "An error occurred while retrieving your courses.",
-    });
+    console.error("Error fetching user courses (Approach A):", error);
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 };
 

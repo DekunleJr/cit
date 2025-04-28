@@ -159,7 +159,7 @@
               id="collapseScores_<%= student._id %>"
             >
               <form
-                action="courses/<%= course._id %>/students/<%= student._id %>/update-scores"
+                action="/courses/<%= course._id %>/students/<%= student._id %>/update-scores"
                 method="POST"
               >
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
@@ -179,7 +179,7 @@
                     <label
                       for="score_<%= student._id %>_<%= subject._id %>_a_<%= assignmentId %>"
                     >
-                      <%= assignment.title %>
+                      <%= assignment.title %> (Max score: <%= typeof assignment.totalPoints === 'number' ? assignment.totalPoints : 'N/A' %>)
                     </label>
                     <input
                       type="number"
@@ -188,7 +188,9 @@
                       name="scores[<%= subject._id %>][assignment][<%= assignmentId %>]"
                       value="<%= currentGrade %>"
                       min="0"
-                      step="any" placeholder="Score" >
+                      max="<%= typeof assignment.totalPoints === 'number' ? assignment.totalPoints : '' %>"
+                      step="any" 
+                      placeholder="Max score: <%= typeof assignment.totalPoints === 'number' ? assignment.totalPoints : 'N/A' %>" >
                   </div>
                   <% }); %> 
                   <% } else { %>
@@ -206,7 +208,7 @@
                     <label
                       for="score_<%= student._id %>_<%= subject._id %>_p_<%= projectId %>"
                     >
-                      <%= project.title %>
+                      <%= project.title %> (Max score: <%= typeof project.totalPoints === 'number' ? project.totalPoints : 'N/A' %>)
                     </label>
                     <input
                       type="number"
@@ -215,8 +217,9 @@
                       name="scores[<%= subject._id %>][project][<%= projectId %>]"
                       value="<%= currentGrade %>"
                       min="0"
+                      max="<%= typeof project.totalPoints === 'number' ? project.totalPoints : '' %>"
                       step="any"
-                      placeholder="Score"
+                      placeholder="Max score: <%= typeof project.totalPoints === 'number' ? project.totalPoints : 'N/A' %>"
                     />
                   </div>
                   <% }); %> 
@@ -235,9 +238,7 @@
 
                 <div class="text-right mt30">
                   <button type="submit" class="btn btn-success btn-sm">
-                    <i class="icon-check"></i> Save Scores <%# Optional: Remove
-                    "for student..." from button text as it's implied by context
-                    %>
+                    <i class="icon-check"></i> Save Scores
                   </button>
                 </div>
               </form>
