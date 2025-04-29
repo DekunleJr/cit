@@ -1,52 +1,4 @@
 <%- include('../includes/head.ejs') %>
-<style>
-  .student-card {
-    border: 1px solid #e6e5e5; /* From .probootstrap-teacher */
-    padding: 20px;
-    margin-bottom: 30px; /* mb30 */
-    background-color: #fff;
-    border-radius: 4px;
-  }
-  /* Keep styles for inside the form */
-  .subject-scores {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-  }
-  .score-input-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px; /* mb10 */
-  }
-  .score-input-group label {
-    flex-basis: 60%;
-    margin-bottom: 0;
-    padding-right: 10px;
-    font-size: 0.9em;
-  }
-  .score-input-group label small {
-    color: #8b8e94;
-    font-size: 0.9em;
-  }
-  .score-input-group input {
-    flex-basis: 40%;
-    height: 35px;
-    padding: 5px 10px;
-  }
-  .add-student-section {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 5px;
-    border: 1px solid #eee;
-    margin-bottom: 40px; /* mb40 */
-  }
-  /* Style for the collapsed form area */
-  .collapse-form-area {
-    margin-top: 20px; /* Add space above the form when opened */
-    padding-top: 20px;
-    border-top: 1px dashed #ccc; /* Visual separator */
-  }
-</style>
 <body>
   <%- include('../includes/nav.ejs') %>
 
@@ -246,7 +198,6 @@
             <!-- /.collapse -->
             <!-- END COLLAPSIBLE AREA -->
           </div>
-          <!-- /.student-card -->
           <% }); %> 
           <% } %>
         </div>

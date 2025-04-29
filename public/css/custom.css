@@ -177,31 +177,6 @@ body {
   padding-bottom: 30px;
 }
 
-.profile-card {
-  background-color: #ffffff; /* White background for the card */
-  border: none;
-  border-radius: 10px; /* Softer corners */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow */
-  padding: 25px;
-}
-
-.profile-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover; /* Ensures image covers the area nicely */
-  margin: 0 auto 20px auto; /* Center the avatar with bottom margin */
-  display: block;
-  background-color: #e9ecef; /* Placeholder background */
-  color: #6c757d; /* Placeholder icon color */
-  display: flex; /* Use flexbox to center icon */
-  align-items: center;
-  justify-content: center;
-  font-size: 45px; /* Icon size */
-  border: 3px solid #ffffff; /* Optional white border around avatar */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow on avatar */
-}
-
 .profile-card .card-title {
   margin-bottom: 5px;
   font-weight: 600;
@@ -218,19 +193,59 @@ body {
   list-style: none; /* Remove bullets */
 }
 
+.progress {
+  height: 10px;
+  margin-bottom: 5px;
+  background-color: #e9ecef;
+}
+.score-display {
+  font-weight: bold;
+}
+.score-display.good {
+  color: #28a745;
+} /* Green */
+.score-display.ok {
+  color: #ffc107;
+} /* Yellow */
+.score-display.bad {
+  color: #dc3545;
+} /* Red */
+.no-score {
+  color: #6c757d;
+  font-style: italic;
+  font-size: 0.9em;
+}
+.subject-details-links a {
+  margin-top: 5px;
+}
+.profile-card {
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #eee;
+  margin: 0 auto 15px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: #aaa;
+}
 .details-list li {
-  margin-bottom: 12px; /* Spacing between list items */
-  font-size: 0.95em;
-  color: #555;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
 }
-
-.details-list i {
-  margin-right: 10px; /* Space between icon and text */
-  color: #007bff; /* Bootstrap primary color for icons */
-  width: 20px; /* Ensure icons align */
+.details-list li i {
+  width: 25px;
   text-align: center;
+  color: #007bff;
+  margin-right: 5px;
 }
-
 .course-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%; /* Make cards in a row have the same base height */
@@ -348,4 +363,132 @@ body {
   font-size: 85%;
   margin-top: 5px;
   display: block;
+}
+.password-input-wrapper {
+  position: relative; /* Container for absolute positioning */
+}
+/* Add padding to the right of the input field to make space for the button */
+#password {
+  padding-right: 40px;
+  border-top-right-radius: 0.25rem !important;
+  border-bottom-right-radius: 0.25rem !important;
+}
+#confirm_password {
+  padding-right: 40px;
+  border-top-right-radius: 0.25rem !important;
+  border-bottom-right-radius: 0.25rem !important;
+}
+/* Style the toggle button */
+#togglePassword,
+#toggleConfirmPassword {
+  position: absolute;
+  top: 50%;
+  right: 0px; /* Position inside the right edge */
+  transform: translateY(-50%); /* Center vertically */
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.75rem; /* Adjust padding for click area */
+  cursor: pointer;
+  color: #6c757d; /* Muted color for the icon */
+  line-height: 1; /* Prevent extra space */
+  z-index: 3; /* Ensure it's above the input */
+}
+#togglePassword:focus,
+#toggleConfirmPassword:focus {
+  outline: none; /* Remove default focus outline */
+  box-shadow: none;
+}
+.mb-2 {
+  margin-bottom: 1rem !important; /* Adjust margin for better spacing */
+}
+#togglePassword:hover i,
+#toggleConfirmPassword:hover i {
+  color: #343a40; /* Darken icon on hover */
+}
+.login-card {
+  width: 100%;
+  max-width: 450px;
+}
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  font-size: 0.9em;
+}
+.course-header-bg {
+  /* Example gradient - same as before */
+  background: linear-gradient(45deg, #007bff, #6c757d);
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 4rem 0; /* More padding */
+}
+.course-price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #007bff; /* Direct color or use Bootstrap variable if setup */
+}
+.action-card {
+  position: -webkit-sticky; /* Safari */
+  position: sticky; /* Make the action card sticky */
+  top: 20px; /* Adjust spacing from top */
+}
+.subject-list-item {
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 5px;
+  transition: box-shadow 0.2s ease-in-out;
+}
+.subject-list-item:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.student-card {
+  border: 1px solid #e6e5e5; /* From .probootstrap-teacher */
+  padding: 20px;
+  margin-bottom: 30px; /* mb30 */
+  background-color: #fff;
+  border-radius: 4px;
+}
+/* Keep styles for inside the form */
+.subject-scores {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+.score-input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* mb10 */
+}
+.score-input-group label {
+  flex-basis: 60%;
+  margin-bottom: 0;
+  padding-right: 10px;
+  font-size: 0.9em;
+}
+.score-input-group label small {
+  color: #8b8e94;
+  font-size: 0.9em;
+}
+.score-input-group input {
+  flex-basis: 40%;
+  height: 35px;
+  padding: 5px 10px;
+}
+.add-student-section {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #eee;
+  margin-bottom: 40px; /* mb40 */
+}
+/* Style for the collapsed form area */
+.collapse-form-area {
+  margin-top: 20px; /* Add space above the form when opened */
+  padding-top: 20px;
+  border-top: 1px dashed #ccc; /* Visual separator */
 }

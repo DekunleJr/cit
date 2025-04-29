@@ -20,12 +20,44 @@
                             <input type="text" placeholder="Input your Lastname" id="lastname" name="lastname" value="<%= oldInput.lastname %>" required><br>
                         
                             <input type="email" placeholder="Input your Email" id="email" name="email" value="<%= oldInput.email %>" required><br>
+
+                            <div class="form-group mb-4">
+                                <div class="password-input-wrapper">
+                                    <input
+                                    type="password"
+                                    class="form-control form-control-lg"
+                                    placeholder="Input your Password"
+                                    name="password"
+                                    id="password"
+                                    value=""
+                                    required
+                                    aria-label="Password"
+                                    >
+                                    <button class="password-toggle-btn" type="button" id="togglePassword" aria-label="Show password">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
                         
-                            <input type="password" placeholder="Input your Password" id="password" name="password" value="<%= oldInput.password %>" required><br>
-                        
-                            <input type="password" placeholder="Confirm password" id="confirm_password" name="confirm_password" value="<%= oldInput.confirm_password %>" required><br>
-                        
-                            <select id="type" name="type" required>
+                            <div class="form-group mb-4">
+                                <div class="password-input-wrapper">
+                                    <input
+                                    type="password"
+                                    class="form-control form-control-lg"
+                                    placeholder="Confirm your Password"
+                                    name="confirm_password"
+                                    id="confirm_password"
+                                    value=""
+                                    required
+                                    aria-label="Password"
+                                    >
+                                    <button class="password-toggle-btn" type="button" id="toggleConfirmPassword" aria-label="Show password">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <select id="type" name="type" class="mb-2" required>
                                 <option value="" disabled selected>Select your type</option>
                                 <option value="student">Student</option>
                                 <option value="requires_service">Requires a Service</option>

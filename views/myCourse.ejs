@@ -1,22 +1,5 @@
 <%- include('includes/head.ejs') %>
 <title><%= user.firstname %>'s Dashboard</title>
-<!-- Add Font Awesome if not already included -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<style>
-  /* Optional: Styles for the progress bar/score display - Copied from previous example */
-  .progress { height: 10px; margin-bottom: 5px; background-color: #e9ecef; }
-  .score-display { font-weight: bold; }
-  .score-display.good { color: #28a745; } /* Green */
-  .score-display.ok { color: #ffc107; } /* Yellow */
-  .score-display.bad { color: #dc3545; } /* Red */
-  .no-score { color: #6c757d; font-style: italic; font-size: 0.9em; }
-  .subject-details-links a { margin-top: 5px; } /* Space out links */
-  /* Your probootstrap styles (.profile-card etc) */
-  .profile-card { background: #fff; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-  .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: #eee; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #aaa;}
-  .details-list li { margin-bottom: 8px; display: flex; align-items: center; }
-  .details-list li i { width: 25px; text-align: center; color: #007bff; margin-right: 5px; }
-</style>
 </head>
 
 <body>
