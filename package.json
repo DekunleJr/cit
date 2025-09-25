@@ -55,6 +55,8 @@
     "simple-update-notifier": "^2.0.0",
     "stripe": "^17.3.1",
     "supports-color": "^5.5.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "to-regex-range": "^5.0.1",
     "touch": "^3.1.1",
     "undefsafe": "^2.0.5"

@@ -12,6 +12,8 @@ const flash = require("connect-flash");
 const multer = require("multer");
 const compression = require("compression");
 const morgan = require("morgan");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger"); // Import the Swagger specification
 
 const errorController = require("./controller/error");
 const User = require("./models/user.js");
@@ -110,6 +112,9 @@ app.use((req, res, next) => {
   res.locals.userRole = req.session.user ? req.session.user.type : null;
   next();
 });
+
+// Serve Swagger UI
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(authRoutes);
 app.use(routes);

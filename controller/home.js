@@ -295,10 +295,12 @@ exports.getMyCourses = async (req, res, next) => {
 exports.getAdmin = async (req, res, next) => {
   try {
     const courses = await Course.find(); // Fetch all courses
+    const services = await Service.find(); // Fetch all services
     res.render("admin", {
       path: "/admin",
       pageTitle: "Admin page",
       courses: courses, // Pass courses to the view
+      services: services, // Pass services to the view
       errorMessage: req.flash("error"), // Pass flash messages
       successMessage: req.flash("success"),
     });
