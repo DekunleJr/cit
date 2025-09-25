@@ -3,6 +3,8 @@ const Subject = require("../models/subject");
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
 const mongoose = require("mongoose");
+const path = require("path");
+const fileHelper = require("../util/file"); // Make sure to require fileHelper
 
 exports.getAddSubject = async (req, res, next) => {
   try {
@@ -29,6 +31,103 @@ exports.getAddSubject = async (req, res, next) => {
     console.error("Error fetching course for add subject form:", err);
     console.log(err);
     const error = new Error("Failed to load add subject form.");
+    error.statusCode = 500;
+    next(error);
+  }
+};
+
+// --- Controller for Editing a Course ---
+exports.getEditCourse = async (req, res, next) => {
+  const courseId = req.params.courseId;
+  try {
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      req.flash("error", "Course not found.");
+      return res.redirect("/admin"); // Redirect to admin dashboard or course list
+    }
+
+    res.render("admin/edit-course-form", {
+      pageTitle: `Edit Course: ${course.title}`,
+      path: `/admin/courses/${courseId}/edit`,
+      course: course,
+      editing: true, // Indicate that we are in edit mode
+      hasError: false,
+      errorMessage: null,
+      validationErrors: [],
+      oldInput: {
+        title: course.title,
+        description: course.description,
+        date: course.date,
+        price: course.price,
+        imgUrl: course.imgUrl,
+      },
+      csrfToken: req.csrfToken(),
+    });
+  } catch (err) {
+    console.error("Error fetching course for edit form:", err);
+    const error = new Error("Failed to load course edit form.");
+    error.statusCode = 500;
+    next(error);
+  }
+};
+
+exports.postEditCourse = async (req, res, next) => {
+  const courseId = req.params.courseId;
+  const { title, description, date, price } = req.body;
+  const image = req.file; // Get the uploaded file
+  const errors = validationResult(req);
+
+  try {
+    const course = await Course.findById(courseId);
+    if (!course) {
+      req.flash("error", "Course not found.");
+      return res.redirect("/admin");
+    }
+
+    if (!errors.isEmpty()) {
+      console.log(errors.array());
+      return res.status(422).render("admin/edit-course-form", {
+        pageTitle: `Edit Course`,
+        path: `/admin/courses/${courseId}/edit`,
+        course: { _id: courseId }, // Pass ID for form action
+        editing: true,
+        hasError: true,
+        errorMessage: errors.array()[0].msg,
+        validationErrors: errors.array(),
+        oldInput: {
+          title,
+          description,
+          date,
+          price,
+          imgUrl: course.imgUrl, // Retain old image URL for re-render
+        },
+        csrfToken: req.csrfToken(),
+      });
+    }
+
+    course.title = title;
+    course.description = description;
+    course.date = date;
+    course.price = price;
+
+    if (image) {
+      // If a new image is uploaded, delete the old one and save the new path
+      if (course.imgUrl) {
+        fileHelper.deleteFile(
+          path.join(__dirname, "..", "public", course.imgUrl)
+        );
+      }
+      course.imgUrl = "img/" + image.filename;
+    }
+    // If no new image is uploaded, course.imgUrl remains unchanged
+
+    await course.save();
+    req.flash("success", `Course "${course.title}" updated successfully!`);
+    res.redirect("/admin"); // Redirect to admin dashboard or course list
+  } catch (err) {
+    console.error("Error updating course:", err);
+    const error = new Error("Failed to update course.");
     error.statusCode = 500;
     next(error);
   }
@@ -610,6 +709,55 @@ exports.postAddStudentToCourse = async (req, res, next) => {
   } catch (err) {
     console.error("Error adding student to course:", err);
     req.flash("error", "Failed to add student to the course.");
+    res.redirect(`/courses/${courseId}/manage-students`);
+    // Consider passing error to next(err)
+  }
+};
+
+// --- Controller for Removing a Student from a Course ---
+exports.postRemoveStudentFromCourse = async (req, res, next) => {
+  const courseId = req.params.courseId;
+  const userIdToRemove = req.body.userIdToRemove; // Changed from userIdToAdd
+
+  try {
+    const user = await User.findById(userIdToRemove);
+    const course = await Course.findById(courseId); // No need to populate subjects here
+
+    if (!user || !course) {
+      req.flash("error", "User or Course not found.");
+      return res.redirect(`/courses/${courseId}/manage-students`);
+    }
+
+    // Check if already not enrolled
+    if (!user.purchasedCourses.includes(courseId)) {
+      req.flash(
+        "info",
+        `${user.firstname} ${user.lastname} is not enrolled in this course.`
+      );
+      return res.redirect(`/courses/${courseId}/manage-students`);
+    }
+
+    // Remove course from user's purchased list
+    user.purchasedCourses = user.purchasedCourses.filter(
+      (cId) => cId.toString() !== courseId.toString()
+    );
+
+    // Remove subjectProgress entries related to this course
+    user.subjectProgress = user.subjectProgress.filter((progress) => {
+      // Keep progress entries where the subject's course is NOT the one being removed
+      // This assumes subjectProgress.subject is populated or is an ObjectId
+      return progress.subject?.course?.toString() !== courseId.toString();
+    });
+
+    await user.save();
+    req.flash(
+      "success",
+      `${user.firstname} ${user.lastname} successfully removed from the course.`
+    );
+    res.redirect(`/courses/${courseId}/manage-students`);
+  } catch (err) {
+    console.error("Error removing student from course:", err);
+    req.flash("error", "Failed to remove student from the course.");
     res.redirect(`/courses/${courseId}/manage-students`);
     // Consider passing error to next(err)
   }

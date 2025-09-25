@@ -188,6 +188,41 @@
                     <button class="btn btn-primary btn-lg btn-ghost probootstrap-animate" type="submit">Post Testimonial</button>
                 </form>
             </section>
+
+            <section class="form">
+                <div>
+                    <h3>Manage Courses</h3>
+                </div>
+                <% if (courses && courses.length > 0) { %>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% courses.forEach(course => { %>
+                            <tr>
+                                <td><%= course.title %></td>
+                                <td><%= course.price %></td>
+                                <td>
+                                    <a href="/admin/courses/<%= course._id %>/edit" class="btn btn-info btn-sm">
+                                        <i class="icon-pencil"></i> Edit
+                                    </a>
+                                    <!-- Optionally, add a delete button here -->
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                <% } else { %>
+                <p class="text-muted">No courses available to manage.</p>
+                <% } %>
+            </section>
         </div>    
     </main>
     

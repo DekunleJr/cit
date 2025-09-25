@@ -75,6 +75,52 @@
       <hr class="mt40 mb40" />
       <!-- Separator -->
 
+      <!-- Remove Existing User Section -->
+      <div class="row">
+        <div class="col-md-12 probootstrap-animate">
+          <div class="remove-student-section">
+            <h3 class="mt0 mb20">Remove Student from Course</h3>
+            <% if (enrolledStudents.length > 0) { %>
+            <form
+              action="/courses/<%= course._id %>/remove-student"
+              method="POST"
+              class="form-inline"
+            >
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <div class="form-group mb-2 mr-sm-2">
+                <label for="userIdToRemove" class="sr-only">Select Student</label>
+                <select
+                  name="userIdToRemove"
+                  id="userIdToRemove"
+                  class="form-control"
+                  required
+                >
+                  <option value="" disabled selected>-- Select Student --</option>
+                  <% enrolledStudents.forEach(student => { %>
+                  <option value="<%= student._id %>">
+                    <%= student.lastname %>, <%= student.firstname %> (<%= student.email
+                    %>)
+                  </option>
+                  <% }); %>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-danger mb-2">
+                <i class="icon-minus"></i> Remove Student
+              </button>
+            </form>
+            <% } else { %>
+            <p class="text-muted">
+              No students are currently enrolled in this course to remove.
+            </p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <!-- End Remove User Section -->
+
+      <hr class="mt40 mb40" />
+      <!-- Separator -->
+
       <!-- Enrolled Students List & Score Editing -->
       <div class="row">
         <div class="col-md-12 probootstrap-animate">

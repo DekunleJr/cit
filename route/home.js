@@ -155,6 +155,45 @@ router.post(
   subCon.postAddStudentToCourse // New controller function
 );
 
+router.post(
+  "/courses/:courseId/remove-student",
+  isAdmin,
+  [
+    // Add validation for the selected user ID
+    body("userIdToRemove", "Please select a student to remove.").isMongoId(), // Check if it's a valid MongoDB ObjectId format
+  ],
+  subCon.postRemoveStudentFromCourse // New controller function
+);
+
+// Routes for editing courses
+router.get("/admin/courses/:courseId/edit", isAdmin, subCon.getEditCourse);
+router.post(
+  "/admin/courses/:courseId/edit",
+  isAdmin,
+  [
+    body("title", "Course title is required and must be at least 3 characters.")
+      .isString()
+      .isLength({ min: 3 })
+      .trim(),
+    body(
+      "description",
+      "Description is required and must be at least 5 characters."
+    )
+      .isLength({ min: 5 })
+      .trim(),
+    body("date", "Please enter a valid date for the course.")
+      .isString() // Assuming date is a string like "Jan 1 - Mar 30"
+      .isLength({ min: 3 })
+      .trim(),
+    body("price", "Price must be a valid number and non-negative.").isFloat({
+      min: 0,
+    }),
+    // No direct validation for 'image' file here, multer handles it.
+    // If no image is provided, the existing one will be kept.
+  ],
+  subCon.postEditCourse
+);
+
 router.get("/:courseId", isAuth, controller.getCourse);
 
 module.exports = router;

@@ -129,49 +129,9 @@ exports.getTeacher = async (req, res, next) => {
   }
 };
 
-// exports.getMyCourses = async (req, res, next) => {
-//   try {
-//     const userId = req.session.user._id;
-
-//     const user = await User.findById(userId).populate({
-//       path: "purchasedCourses",
-//       populate: {
-//         path: "subjects",
-//       },
-//     });
-
-//     if (!user) {
-//       return res.status(404).render("error", {
-//         pageTitle: "Error",
-//         message: "User not found",
-//       });
-//     }
-
-//     // Get the purchased courses (populated from the User model)
-//     const myCourses = user.purchasedCourses;
-
-//     // Render the "My Courses" page
-//     res.render("myCourse", {
-//       pageTitle: "My Courses",
-//       path: "/myCourses",
-//       course: myCourses,
-//       user: user,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching user courses:", error);
-//     if (!error.statusCode) {
-//       error.statusCode = 500;
-//     }
-//     next(new Error(error));
-//   }
-// };
-
 exports.getMyCourses = async (req, res, next) => {
   try {
-    const userId = req.session.user._id; // Or req.user._id if populated by middleware
-
-    // 1. Fetch User with Populated Data
-    // Need courses, their basic subjects, AND the user's progress details
+    const userId = req.session.user._id;
     const user = await User.findById(userId)
       .populate({
         path: "purchasedCourses", // Populate courses
@@ -181,40 +141,34 @@ exports.getMyCourses = async (req, res, next) => {
           select: "title code units _id", // Fields needed for basic display
         },
       })
-      // IMPORTANT: Populate subjectProgress and the subject linked within it
       .populate({
         path: "subjectProgress.subject",
         select: "title code _id", // Basic info for matching
       })
-      .lean(); // Use .lean() for performance and easier object manipulation
+      .lean();
 
     if (!user) {
-      // If using .lean(), user will be null, not an object with no properties
       return res.status(404).render("error", {
-        // Or redirect, or throw error
         pageTitle: "Error",
         message: "User not found",
       });
     }
 
     // --- Calculation Logic ---
-    let subjectDataMap = {}; // Store calculated { subjectId: { enrichedData } }
+    let subjectDataMap = {};
 
     if (user.subjectProgress && user.subjectProgress.length > 0) {
-      // 2. Get IDs of subjects user has progress for
       const subjectIdsWithProgress = user.subjectProgress
         .map((p) => p.subject?._id) // Get subject ObjectId from progress
         .filter((id) => id) // Filter out any null/undefined refs
         .map((id) => id.toString()); // Convert to strings for consistent map keys
 
       if (subjectIdsWithProgress.length > 0) {
-        // 3. Fetch full definitions for these subjects
         const subjectDefinitions = await Subject.find({
           _id: { $in: subjectIdsWithProgress },
         })
-          // Ensure totalPoints is selected within assignments/projects
           .select("_id assignments projects title code units")
-          .lean(); // Use lean here too
+          .lean();
 
         const subjectDefinitionsMap = new Map(
           subjectDefinitions.map((s) => [s._id.toString(), s])
@@ -223,7 +177,6 @@ exports.getMyCourses = async (req, res, next) => {
           user.subjectProgress.map((p) => [p.subject?._id?.toString(), p])
         );
 
-        // 4. Calculate average and prepare detailed progress for each subject
         for (const subjectIdStr of subjectDefinitionsMap.keys()) {
           const definition = subjectDefinitionsMap.get(subjectIdStr);
           const progress = userProgressMap.get(subjectIdStr);
@@ -314,8 +267,6 @@ exports.getMyCourses = async (req, res, next) => {
       }
     }
 
-    // 5. Inject calculated data back into the user's course structure
-    // Since we used .lean(), user is a plain object, we can modify it
     if (user.purchasedCourses && Array.isArray(user.purchasedCourses)) {
       user.purchasedCourses.forEach((course) => {
         if (course.subjects && Array.isArray(course.subjects)) {
@@ -326,7 +277,6 @@ exports.getMyCourses = async (req, res, next) => {
       });
     }
 
-    // 6. Render the view
     res.render("myCourse", {
       pageTitle: "My Courses",
       path: "/myCourses",
@@ -344,9 +294,13 @@ exports.getMyCourses = async (req, res, next) => {
 
 exports.getAdmin = async (req, res, next) => {
   try {
+    const courses = await Course.find(); // Fetch all courses
     res.render("admin", {
       path: "/admin",
       pageTitle: "Admin page",
+      courses: courses, // Pass courses to the view
+      errorMessage: req.flash("error"), // Pass flash messages
+      successMessage: req.flash("success"),
     });
   } catch (err) {
     next(new Error(err));
