@@ -1435,6 +1435,107 @@ router.post(
 
 /**
  * @swagger
+ * /admin/services/{serviceId}/edit:
+ *   get:
+ *     summary: Get service edit form
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Renders the form to edit an existing service, pre-populated with its current data. Requires administrator privileges.
+ *     parameters:
+ *       - in: path
+ *         name: serviceId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the service to edit.
+ *     responses:
+ *       200:
+ *         description: Successfully rendered the service edit form.
+ *       401:
+ *         description: Unauthorized, user not authenticated.
+ *       403:
+ *         description: Forbidden, user is not an administrator.
+ *       404:
+ *         description: Service not found.
+ *       500:
+ *         description: Server error.
+ */
+router.get("/admin/services/:serviceId/edit", isAdmin, subCon.getEditService);
+
+/**
+ * @swagger
+ * /admin/services/{serviceId}/edit:
+ *   post:
+ *     summary: Update an existing service
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Updates the details of an existing service, including optional image upload. Requires administrator privileges.
+ *     parameters:
+ *       - in: path
+ *         name: serviceId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the service to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Updated title of the service.
+ *               description:
+ *                 type: string
+ *                 description: Updated description of the service.
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: New image file for the service (optional).
+ *             required:
+ *               - title
+ *               - description
+ *     responses:
+ *       200:
+ *         description: Service updated successfully. Redirects to the admin dashboard.
+ *       401:
+ *         description: Unauthorized, user not authenticated.
+ *       403:
+ *         description: Forbidden, user is not an administrator.
+ *       404:
+ *         description: Service not found.
+ *       422:
+ *         description: Validation failed.
+ *       500:
+ *         description: Failed to update service or server error.
+ */
+router.post(
+  "/admin/services/:serviceId/edit",
+  isAdmin,
+  [
+    body(
+      "title",
+      "Service title is required and must be at least 3 characters."
+    )
+      .isString()
+      .isLength({ min: 3 })
+      .trim(),
+    body(
+      "description",
+      "Description is required and must be at least 5 characters."
+    )
+      .isLength({ min: 5 })
+      .trim(),
+  ],
+  subCon.postEditService
+);
+
+/**
+ * @swagger
  * /courses/{courseId}:
  *   get:
  *     summary: Get single course details

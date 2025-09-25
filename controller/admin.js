@@ -5,6 +5,7 @@ const User = require("../models/user");
 const mongoose = require("mongoose");
 const path = require("path");
 const fileHelper = require("../util/file"); // Make sure to require fileHelper
+const Service = require("../models/service"); // Require the Service model
 
 exports.getAddSubject = async (req, res, next) => {
   try {
@@ -31,6 +32,97 @@ exports.getAddSubject = async (req, res, next) => {
     console.error("Error fetching course for add subject form:", err);
     console.log(err);
     const error = new Error("Failed to load add subject form.");
+    error.statusCode = 500;
+    next(error);
+  }
+};
+
+// --- Controller for Editing a Service ---
+exports.getEditService = async (req, res, next) => {
+  const serviceId = req.params.serviceId;
+  try {
+    const service = await Service.findById(serviceId);
+
+    if (!service) {
+      req.flash("error", "Service not found.");
+      return res.redirect("/admin"); // Redirect to admin dashboard or service list
+    }
+
+    res.render("admin/edit-service-form", {
+      pageTitle: `Edit Service: ${service.title}`,
+      path: `/admin/services/${serviceId}/edit`,
+      service: service,
+      editing: true, // Indicate that we are in edit mode
+      hasError: false,
+      errorMessage: null,
+      validationErrors: [],
+      oldInput: {
+        title: service.title,
+        description: service.description,
+        imgUrl: service.imgUrl,
+      },
+      csrfToken: req.csrfToken(),
+    });
+  } catch (err) {
+    console.error("Error fetching service for edit form:", err);
+    const error = new Error("Failed to load service edit form.");
+    error.statusCode = 500;
+    next(error);
+  }
+};
+
+exports.postEditService = async (req, res, next) => {
+  const serviceId = req.params.serviceId;
+  const { title, description } = req.body;
+  const image = req.file; // Get the uploaded file
+  const errors = validationResult(req);
+
+  try {
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      req.flash("error", "Service not found.");
+      return res.redirect("/admin");
+    }
+
+    if (!errors.isEmpty()) {
+      console.log(errors.array());
+      return res.status(422).render("admin/edit-service-form", {
+        pageTitle: `Edit Service`,
+        path: `/admin/services/${serviceId}/edit`,
+        service: { _id: serviceId }, // Pass ID for form action
+        editing: true,
+        hasError: true,
+        errorMessage: errors.array()[0].msg,
+        validationErrors: errors.array(),
+        oldInput: {
+          title,
+          description,
+          imgUrl: service.imgUrl, // Retain old image URL for re-render
+        },
+        csrfToken: req.csrfToken(),
+      });
+    }
+
+    service.title = title;
+    service.description = description;
+
+    if (image) {
+      // If a new image is uploaded, delete the old one and save the new path
+      if (service.imgUrl) {
+        fileHelper.deleteFile(
+          path.join(__dirname, "..", "public", service.imgUrl)
+        );
+      }
+      service.imgUrl = "img/" + image.filename;
+    }
+    // If no new image is uploaded, service.imgUrl remains unchanged
+
+    await service.save();
+    req.flash("success", `Service "${service.title}" updated successfully!`);
+    res.redirect("/admin"); // Redirect to admin dashboard or service list
+  } catch (err) {
+    console.error("Error updating service:", err);
+    const error = new Error("Failed to update service.");
     error.statusCode = 500;
     next(error);
   }
